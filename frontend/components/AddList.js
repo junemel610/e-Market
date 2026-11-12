@@ -161,3 +161,5 @@ const styles = StyleSheet.create({
   primaryButton: { backgroundColor: AMBER },
   createButtonText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.onPrimary },
 });
+
+export default AddList;
