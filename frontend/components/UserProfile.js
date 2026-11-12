@@ -433,3 +433,5 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 });
+
+export default UserProfile;
