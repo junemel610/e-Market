@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native';
 
+const BLACK = '#000000';
+const AMBER = '#F59E0B';
+const GRAY = '#BEBEBE';
+const WHITE = '#FFFFFF';
+const CARD = '#111111';
+
 export default function Input({ onSignInPress }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -75,21 +81,21 @@ const styles = StyleSheet.create({
   input: {
     padding: 10,
     minHeight: 52,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: GRAY,
     borderWidth: 1,
     fontSize: 16,
     borderRadius: 10,
     fontStyle: 'italic',
     width: 300,
-    color: '#F8FAFC',
-    backgroundColor: '#3730A3',
+    color: WHITE,
+    backgroundColor: BLACK,
   },
   container: {
     width: '100%',
     padding: 10,
   },
   textColor: {
-    color: '#CBD5E1',
+    color: AMBER,
     marginBottom: 8,
     fontSize: 13,
     fontWeight: '700',
@@ -97,13 +103,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   createButton: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: AMBER,
     paddingVertical: 14,
     minHeight: 52,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginTop: 8,
-    shadowColor: '#B45309',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
   createButtonText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#1E1B4B',
+    color: BLACK,
   },
   error: { color: '#FCA5A5', marginTop: 12, textAlign: 'center', fontSize: 13 },
 });
