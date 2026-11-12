@@ -1,5 +1,5 @@
 const inMemoryStore = {}; // Temporary in-memory store for codes
-const { check, validationResult } = require('express-validator');
+const verifiedStore = {}; // Emails that completed code verification
 const nodemailer = require('nodemailer');
 const User = require('../models/Login');
 
@@ -25,7 +25,7 @@ const sendVerificationEmail = async (email, verificationCode) => {
       subject: 'Password Reset Verification Code',
       text: `Your verification code is: ${verificationCode}`,
     };
-  
+
     try {
       const info = await transporter.sendMail(mailOptions);
       console.log('Email sent:', info.response);
@@ -48,7 +48,8 @@ const sendVerificationEmail = async (email, verificationCode) => {
 
         const verificationCode = Math.floor(100000 + Math.random() * 900000);
         await sendVerificationEmail(email, verificationCode);
-        inMemoryStore[email] = verificationCode;
+        inMemoryStore[email] = { code: verificationCode, expiresAt: Date.now() + 10 * 60 * 1000 };
+        delete verifiedStore[email];
         return res.json({ success: true, message: 'Verification code sent successfully.' });
     } catch (error) {
         console.error('Error sending verification code:', error);
@@ -59,56 +60,39 @@ const sendVerificationEmail = async (email, verificationCode) => {
 
 exports.verifyCode = async (req, res) => {
     const { email, code } = req.body;
-    const storedCode = inMemoryStore[email];
-
-    console.log('Entered Code:', code);
-    console.log('Stored Code:', storedCode);
-
-    if (!storedCode || storedCode !== code) {
+    const stored = inMemoryStore[email];
+    if (!stored || stored.expiresAt < Date.now()) {
+        delete inMemoryStore[email];
+        delete verifiedStore[email];
+        return res.json({ success: false, message: 'Invalid verification code.' });
+    }
+    if (stored.code !== Number(code)) {
         return res.json({ success: false, message: 'Invalid verification code.' });
     }
 
+    verifiedStore[email] = stored.expiresAt;
+    delete inMemoryStore[email];
     res.json({ success: true, message: 'Verification code is valid.' });
 };
-  
-const validatePassword = (password) => {
-    const validationResult = check('password')
-      .trim()
-      .not()
-      .isEmpty()
-      .withMessage('Password is empty.')
-      .isLength({ min: 8, max: 255 })  // Minimum length of 8 characters
-      .withMessage('Password must be between 8 and 255 characters.')
-      .run({ body: { password } });
-  
-    // Check for minimum length separately
-    if (password.length < 8) {
-      validationResult.errors.push({
-        location: 'body',
-        param: 'password',
-        value: password,
-        msg: 'Password must be at least 8 characters long.',
-      });
-    }
-  
-    return validationResult;
-  };
-  
+
   exports.resetPassword = [
     async (req, res) => {
       try {
         const { email, password, confirmPassword } = req.body;
+        const verifiedUntil = verifiedStore[email];
+        if (!verifiedUntil || verifiedUntil < Date.now()) {
+          delete verifiedStore[email];
+          return res.status(403).json({ success: false, message: 'Verify the emailed code before resetting your password.' });
+        }
+
         const user = await User.findOne({ email });
   
         if (!user) {
           return res.json({ success: false, message: 'Email not found in the database.' });
         }
   
-        validatePassword(password);
-        const errors = validationResult(req);
-  
-        if (!errors.isEmpty()) {
-          return res.json({ success: false, message: errors.array()[0].msg });
+        if (typeof password !== 'string' || password.trim().length < 8 || password.length > 255) {
+          return res.status(400).json({ success: false, message: 'Password must be between 8 and 255 characters.' });
         }
   
         if (password !== confirmPassword) {
@@ -117,8 +101,8 @@ const validatePassword = (password) => {
   
         user.password = password;
         await user.save();
-  
-        console.log(`Password reset for ${email}: ${password}`);
+        delete verifiedStore[email];
+        delete inMemoryStore[email];
         res.json({ success: true, message: 'Password reset successful.' });
       } catch (error) {
         console.error('Error resetting password:', error);
@@ -126,4 +110,3 @@ const validatePassword = (password) => {
       }
     }
   ];
-  
