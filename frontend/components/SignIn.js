@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, BackHandler } from 'react-native';
 
+const BLACK = '#000000';
+const AMBER = '#F59E0B';
+const GRAY = '#BEBEBE';
+const WHITE = '#FFFFFF';
+const CARD = '#111111';
+
 export default function SignIn({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -118,16 +124,10 @@ export default function SignIn({ navigation }) {
   );
 }
 
-const INDIGO = '#3730A3';
-const INDIGO_DARK = '#2E298A';
-const AMBER = '#F59E0B';
-const CREAM = '#F8FAFC';
-const MUTED = '#94A3B8';
-
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: '#1E1B4B',
+    backgroundColor: BLACK,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#5B21B6',
-    opacity: 0.6,
+    backgroundColor: AMBER,
+    opacity: 0.15,
   },
   accentBottom: {
     position: 'absolute',
@@ -149,20 +149,20 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#BE185D',
-    opacity: 0.5,
+    backgroundColor: GRAY,
+    opacity: 0.1,
   },
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: '#4338CA',
+    backgroundColor: CARD,
     borderRadius: 20,
     padding: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: GRAY,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 20,
     elevation: 8,
   },
@@ -174,29 +174,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 4,
   },
   markText: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1E1B4B',
+    color: BLACK,
   },
   heading: {
     fontSize: 26,
     fontWeight: '800',
-    color: CREAM,
+    color: WHITE,
     textAlign: 'center',
     marginBottom: 8,
     lineHeight: 32,
   },
   subheading: {
     fontSize: 15,
-    color: MUTED,
+    color: GRAY,
     textAlign: 'center',
     marginBottom: 28,
     lineHeight: 22,
@@ -207,17 +207,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#CBD5E1',
+    color: AMBER,
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   input: {
     fontSize: 16,
-    color: CREAM,
-    backgroundColor: '#3730A3',
+    color: WHITE,
+    backgroundColor: BLACK,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: GRAY,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 14,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     minHeight: 52,
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#B45309',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
@@ -244,12 +244,12 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
-    backgroundColor: '#D97706',
+    backgroundColor: '#B45309',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#1E1B4B',
+    color: BLACK,
   },
   divider: {
     flexDirection: 'row',
@@ -259,11 +259,11 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: GRAY,
   },
   dividerText: {
     fontSize: 13,
-    color: MUTED,
+    color: GRAY,
     marginHorizontal: 12,
     fontWeight: '600',
   },
@@ -271,9 +271,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: GRAY,
     borderRadius: 10,
     paddingVertical: 12,
     minHeight: 52,
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   },
   socialText: {
     fontSize: 15,
-    color: CREAM,
+    color: WHITE,
     fontWeight: '600',
   },
   footerRow: {
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: MUTED,
+    color: GRAY,
   },
   link: {
     alignSelf: 'center',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     fontSize: 14,
-    color: '#FBBF24',
+    color: AMBER,
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
