@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, BackHandler } from 'react-native';
-
-const WHITE = '#FFFFFF';
-const AMBER = '#F59E0B';
-const GRAY = '#BEBEBE';
-const BLACK = '#111111';
-const CARD = '#F3F4F6';
+import theme from '../src/theme';
 
 export default function SignIn({ navigation }) {
   const [username, setUsername] = useState('');
@@ -125,169 +120,28 @@ export default function SignIn({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    backgroundColor: WHITE,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  accentTop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    backgroundColor: AMBER,
-  },
-  accentBottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 20,
-    backgroundColor: GRAY,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: WHITE,
-    borderRadius: 20,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: GRAY,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  mark: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    backgroundColor: AMBER,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginBottom: 24,
-  },
-  markText: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: WHITE,
-  },
-  heading: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: BLACK,
-    textAlign: 'center',
-    marginBottom: 8,
-    lineHeight: 32,
-  },
-  subheading: {
-    fontSize: 15,
-    color: '#666666',
-    textAlign: 'center',
-    marginBottom: 28,
-    lineHeight: 22,
-  },
-  field: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: AMBER,
-    marginBottom: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  input: {
-    fontSize: 16,
-    color: BLACK,
-    backgroundColor: CARD,
-    borderWidth: 1,
-    borderColor: GRAY,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    minHeight: 52,
-  },
-  errorText: {
-    fontSize: 13,
-    color: '#DC2626',
-    marginBottom: 14,
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: AMBER,
-    borderRadius: 10,
-    paddingVertical: 14,
-    minHeight: 52,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-    backgroundColor: '#D97706',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: WHITE,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 18,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: GRAY,
-  },
-  dividerText: {
-    fontSize: 13,
-    color: '#666666',
-    marginHorizontal: 12,
-    fontWeight: '600',
-  },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1,
-    borderColor: GRAY,
-    borderRadius: 10,
-    paddingVertical: 12,
-    minHeight: 52,
-    marginBottom: 16,
-  },
-  socialText: {
-    fontSize: 15,
-    color: BLACK,
-    fontWeight: '600',
-  },
-  footerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  footerText: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  link: {
-    alignSelf: 'center',
-    marginBottom: 6,
-  },
-  linkText: {
-    fontSize: 14,
-    color: AMBER,
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
+  page: { flex: 1, backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.lg },
+  accentTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 60, backgroundColor: theme.colors.primary },
+  accentBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, backgroundColor: theme.colors.border },
+  card: { width: '100%', maxWidth: 360, backgroundColor: theme.colors.surface, borderRadius: 20, padding: theme.spacing.xl, borderWidth: 1, borderColor: theme.colors.border, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 },
+  mark: { width: 56, height: 56, borderRadius: 14, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: theme.spacing.md },
+  markText: { fontSize: 24, fontWeight: '800', color: theme.colors.onPrimary },
+  heading: { fontSize: 26, fontWeight: '800', color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.xs, lineHeight: 32 },
+  subheading: { fontSize: theme.fontSize.sm, color: theme.colors.textLight, textAlign: 'center', marginBottom: theme.spacing.lg, lineHeight: 22 },
+  field: { marginBottom: theme.spacing.md },
+  label: { fontSize: theme.fontSize.xs, fontWeight: theme.fontWeight.bold, color: theme.colors.primary, marginBottom: theme.spacing.xs, textTransform: 'uppercase', letterSpacing: 0.5 },
+  input: { fontSize: theme.fontSize.base, color: theme.colors.text, backgroundColor: theme.colors.surfaceMuted, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 10, paddingHorizontal: theme.spacing.md, paddingVertical: theme.spacing.md, minHeight: 52 },
+  errorText: { fontSize: theme.fontSize.xs, color: theme.colors.danger, marginBottom: theme.spacing.md, textAlign: 'center' },
+  button: { backgroundColor: theme.colors.primary, borderRadius: 10, paddingVertical: theme.spacing.md, minHeight: 52, alignItems: 'center', marginBottom: theme.spacing.md },
+  buttonDisabled: { opacity: 0.6, backgroundColor: theme.colors.warning },
+  buttonText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.onPrimary },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: theme.spacing.md },
+  dividerLine: { flex: 1, height: 1, backgroundColor: theme.colors.border },
+  dividerText: { fontSize: theme.fontSize.xs, color: theme.colors.textLight, marginHorizontal: theme.spacing.sm, fontWeight: theme.fontWeight.semibold },
+  socialButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.surfaceMuted, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 10, paddingVertical: theme.spacing.md, minHeight: 52, marginBottom: theme.spacing.md },
+  socialText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  footerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: theme.spacing.sm },
+  footerText: { fontSize: theme.fontSize.base, color: theme.colors.textLight },
+  link: { alignSelf: 'center', marginBottom: theme.spacing.xs },
+  linkText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.semibold, color: theme.colors.primary, textDecorationLine: 'underline' },
 });

@@ -1,6 +1,7 @@
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Input from "./components/Input";
 import Home from "./components/Home";
 import CreateAcc from "./components/CreateAcc";
@@ -8,6 +9,7 @@ import SignIn from "./components/SignIn";
 import ForgotPw from "./components/ForgotPw";
 import CodeVerif from "./components/CodeVerif";
 import ResetPw from "./components/ResetPw";
+import theme from './src/theme';
 import React, { useState } from 'react';
 
 const Stack = createStackNavigator();
@@ -16,9 +18,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{
-        headerStyle: { backgroundColor: '#F59E0B', borderBottomWidth: 0 },
-        headerTintColor: '#111111',
-        headerTitleStyle: { fontSize: 18, fontWeight: '700', color: '#111111' },
+        headerStyle: { backgroundColor: theme.colors.primary, borderBottomWidth: 0 },
+        headerTintColor: theme.colors.onPrimary,
+        headerTitleStyle: { fontSize: 18, fontWeight: '700', color: theme.colors.onPrimary },
         headerTitleAlign: 'center',
       }}>
         <Stack.Screen
@@ -59,7 +61,7 @@ export default function App() {
 
 function HomeScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
       <View style={styles.accentTop} />
       <View style={styles.accentBottom} />
 
@@ -83,96 +85,19 @@ function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  accentTop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    backgroundColor: '#F59E0B',
-  },
-  accentBottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 20,
-    backgroundColor: '#BEBEBE',
-  },
-  card: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 32,
-    borderWidth: 1,
-    borderColor: '#BEBEBE',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    alignItems: 'center',
-  },
-  mark: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
-    backgroundColor: '#F59E0B',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  markText: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  heading: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#111111',
-    textAlign: 'center',
-    marginBottom: 8,
-    lineHeight: 32,
-  },
-  subheading: {
-    fontSize: 15,
-    color: '#666666',
-    textAlign: 'center',
-    marginBottom: 28,
-    lineHeight: 22,
-  },
-  links: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 16,
-    marginTop: 12,
-  },
-  link: {
-    alignSelf: 'center',
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#F59E0B',
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
+  container: { flex: 1, backgroundColor: theme.colors.background, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.lg },
+  accentTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 60, backgroundColor: theme.colors.primary },
+  accentBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, backgroundColor: theme.colors.border },
+  card: { width: '100%', maxWidth: 360, backgroundColor: theme.colors.surface, borderRadius: 20, padding: theme.spacing.xl, borderWidth: 1, borderColor: theme.colors.border, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4, alignItems: 'center' },
+  mark: { width: 56, height: 56, borderRadius: 14, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: theme.spacing.md },
+  markText: { fontSize: 24, fontWeight: '800', color: theme.colors.onPrimary },
+  heading: { fontSize: 26, fontWeight: '800', color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.xs, lineHeight: 32 },
+  subheading: { fontSize: theme.fontSize.sm, color: theme.colors.textLight, textAlign: 'center', marginBottom: theme.spacing.lg, lineHeight: 22 },
+  links: { flexDirection: 'row', justifyContent: 'center', gap: theme.spacing.md, marginTop: theme.spacing.sm },
+  link: { alignSelf: 'center' },
+  linkText: { fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.semibold, color: theme.colors.primary, textDecorationLine: 'underline' },
 });

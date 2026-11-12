@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native';
-
-const BLACK = '#000000';
-const AMBER = '#F59E0B';
-const GRAY = '#BEBEBE';
-const WHITE = '#FFFFFF';
-const CARD = '#111111';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import theme from '../src/theme';
 
 export default function Input({ onSignInPress }) {
   const [username, setUsername] = useState('');
@@ -29,7 +24,7 @@ export default function Input({ onSignInPress }) {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.inputGroup}>
+    <View style={styles.inputGroup}>
       <View style={styles.container}>
         <Text style={styles.textColor}>Username or email</Text>
         <TextInput
@@ -67,58 +62,16 @@ export default function Input({ onSignInPress }) {
       >
         <Text style={styles.createButtonText}>{loading ? 'Signing in…' : 'Sign in'}</Text>
       </TouchableOpacity>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  inputGroup: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 5,
-  },
-  input: {
-    padding: 10,
-    minHeight: 52,
-    borderColor: GRAY,
-    borderWidth: 1,
-    fontSize: 16,
-    borderRadius: 10,
-    fontStyle: 'italic',
-    width: 300,
-    color: WHITE,
-    backgroundColor: BLACK,
-  },
-  container: {
-    width: '100%',
-    padding: 10,
-  },
-  textColor: {
-    color: AMBER,
-    marginBottom: 8,
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  createButton: {
-    backgroundColor: AMBER,
-    paddingVertical: 14,
-    minHeight: 52,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  createButtonText: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: BLACK,
-  },
-  error: { color: '#FCA5A5', marginTop: 12, textAlign: 'center', fontSize: 13 },
+  inputGroup: { margin: 5 },
+  input: { padding: 10, minHeight: 52, borderColor: theme.colors.border, borderWidth: 1, fontSize: theme.fontSize.base, borderRadius: 10, fontStyle: 'italic', width: 300, color: theme.colors.text, backgroundColor: theme.colors.surfaceMuted },
+  container: { width: '100%', padding: 10 },
+  textColor: { color: theme.colors.primary, marginBottom: theme.spacing.xs, fontSize: theme.fontSize.xs, fontWeight: theme.fontWeight.bold, textTransform: 'uppercase', letterSpacing: 0.5 },
+  createButton: { backgroundColor: theme.colors.primary, paddingVertical: theme.spacing.md, minHeight: 52, paddingHorizontal: 20, borderRadius: 10, marginTop: theme.spacing.sm },
+  createButtonText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.onPrimary },
+  error: { color: theme.colors.danger, marginTop: theme.spacing.xs, textAlign: 'center', fontSize: theme.fontSize.xs },
 });
