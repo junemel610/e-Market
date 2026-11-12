@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
-
-const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 
 export default function Input({ onSignInPress }) {
   const [username, setUsername] = useState('');
@@ -20,23 +15,11 @@ export default function Input({ onSignInPress }) {
     }
     setErrorMessage('');
     setLoading(true);
-    try {
-      // The API accepts either a username or an email in its `username` field.
-      const response = await axios.post(`${backendUrl}/sign-in`, { username: username.trim(), password });
-  
-      if (response.data && response.data.success) {
-        const token = response.data.token;
-        if (!token) throw new Error('The server did not return a session token.');
-        await AsyncStorage.setItem('token', token);
-        onSignInPress();
-      } else {
-        setErrorMessage(response.data.message || 'Unable to sign in. Check your credentials.');
-      }
-    } catch (error) {
-      setErrorMessage(error.response?.data?.message || error.message || 'Unable to sign in. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    onSignInPress();
+    setLoading(false);
   };
 
   return (
