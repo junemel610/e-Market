@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';
-import Constants from 'expo-constants';
-
-const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 
 const programs = [
   'Computer Science',
@@ -26,43 +22,29 @@ const CreateAcc = ({ navigation }) => {
   const [selectedProgram, setSelectedProgram] = useState('');
   const [selectedYearLevel, setSelectedYearLevel] = useState('');
   const [loading, setLoading] = useState(false);
-  
 
   const handleCreateAccount = async () => {
     try {
-        // Validate required fields
-        if (loading) return;
-        if (!email.trim() || !username.trim() || !password || !fullname.trim() || !contactNumber.trim() || !selectedProgram || !selectedYearLevel) {
-            alert('All fields are required');
-            console.error('All fields are required');
-            return;
-        }
+      if (loading) return;
+      if (!email.trim() || !username.trim() || !password || !fullname.trim() || !contactNumber.trim() || !selectedProgram || !selectedYearLevel) {
+        alert('All fields are required');
+        console.error('All fields are required');
+        return;
+      }
 
-        setLoading(true);
-        const response = await axios.post(`${backendUrl}/create-user`, {
-            email: email.trim(),
-            username: username.trim(),
-            password,
-            fullname: fullname.trim(),
-            contactNumber: contactNumber.trim(),
-            program: selectedProgram,
-            yearLevel: selectedYearLevel,
-        });
+      setLoading(true);
 
-        if (!response.data?.success) {
-          Alert.alert('Could not create account', response.data?.message || 'Please review your details and try again.');
-          return;
-        }
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
-        // Handle navigation or any other logic after successful account creation
-        navigation.navigate('Account Sign-In');
-      } catch (error) {
-        Alert.alert('Could not create account', error.response?.data?.message || 'Please try again.');
-        console.error('Error creating account:', error);
-      } finally {
-        setLoading(false);
+      Alert.alert('Account created', 'Your account has been created locally.');
+      navigation.navigate('Account Sign-In');
+    } catch (error) {
+      Alert.alert('Could not create account', 'Please try again.');
+      console.error('Error creating account:', error);
+    } finally {
+      setLoading(false);
     }
-};
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
