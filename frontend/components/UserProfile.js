@@ -3,9 +3,11 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, Activ
 import { Input } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
 
+const BLACK = '#000000';
 const AMBER = '#F59E0B';
-const CREAM = '#F8FAFC';
-const MUTED = '#94A3B8';
+const GRAY = '#BEBEBE';
+const WHITE = '#FFFFFF';
+const CARD = '#111111';
 
 const defaultProfileImage = require('../assets/profilePic.jpg');
 
@@ -86,7 +88,7 @@ const UserProfile = () => {
   if (loadingProfile) {
     return (
       <View style={styles.page}>
-        <ActivityIndicator color="#F59E0B" style={styles.spinner} />
+        <ActivityIndicator color={AMBER} style={styles.spinner} />
         <Text style={styles.loadingText}>Loading your profile…</Text>
       </View>
     );
@@ -230,7 +232,7 @@ const UserProfile = () => {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: '#1E1B4B',
+    backgroundColor: BLACK,
     padding: 16,
   },
   accentTop: {
@@ -240,8 +242,8 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: '#5B21B6',
-    opacity: 0.6,
+    backgroundColor: AMBER,
+    opacity: 0.15,
   },
   accentBottom: {
     position: 'absolute',
@@ -250,8 +252,8 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#BE185D',
-    opacity: 0.5,
+    backgroundColor: GRAY,
+    opacity: 0.1,
   },
   scrollContent: {
     flexGrow: 1,
@@ -261,14 +263,14 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: '#4338CA',
+    backgroundColor: CARD,
     borderRadius: 20,
     padding: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: GRAY,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 20,
     elevation: 8,
     alignItems: 'center',
@@ -284,28 +286,28 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: '800',
-    color: CREAM,
+    color: WHITE,
     marginBottom: 4,
   },
   fullName: {
     fontSize: 16,
-    color: '#CBD5E1',
+    color: GRAY,
     marginBottom: 4,
   },
   contactNumber: {
     fontSize: 14,
-    color: MUTED,
+    color: GRAY,
     marginBottom: 4,
   },
   email: {
     fontSize: 14,
-    color: MUTED,
+    color: GRAY,
     marginBottom: 8,
   },
   programYear: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FBBF24',
+    color: AMBER,
     marginBottom: 24,
     fontStyle: 'italic',
   },
@@ -325,7 +327,7 @@ const styles = StyleSheet.create({
   },
   buttonFill: {
     backgroundColor: AMBER,
-    shadowColor: '#B45309',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
@@ -333,7 +335,7 @@ const styles = StyleSheet.create({
   },
   buttonOutline: {
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: AMBER,
     backgroundColor: 'transparent',
   },
   buttonText: {
@@ -341,7 +343,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   buttonOutlineText: {
-    color: CREAM,
+    color: WHITE,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -349,13 +351,13 @@ const styles = StyleSheet.create({
   divider: {
     width: '100%',
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: GRAY,
     marginVertical: 24,
   },
   subheading: {
     fontSize: 16,
     fontWeight: '700',
-    color: CREAM,
+    color: WHITE,
     marginBottom: 16,
     textAlign: 'center',
     width: '100%',
@@ -367,7 +369,7 @@ const styles = StyleSheet.create({
   pickerLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#CBD5E1',
+    color: AMBER,
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -378,20 +380,20 @@ const styles = StyleSheet.create({
   },
   profileInput: {
     fontSize: 16,
-    color: CREAM,
-    backgroundColor: '#3730A3',
+    color: WHITE,
+    backgroundColor: BLACK,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: GRAY,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 14,
     minHeight: 52,
   },
   profilePicker: {
-    color: CREAM,
-    backgroundColor: '#3730A3',
+    color: WHITE,
+    backgroundColor: BLACK,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: GRAY,
     borderRadius: 10,
     minHeight: 52,
     width: '100%',
@@ -403,7 +405,7 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: AMBER,
     marginBottom: 8,
   },
   itemsList: {
@@ -419,11 +421,11 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 14,
-    color: CREAM,
+    color: WHITE,
   },
   loadingText: {
     fontSize: 15,
-    color: MUTED,
+    color: GRAY,
     marginTop: 12,
     textAlign: 'center',
   },
