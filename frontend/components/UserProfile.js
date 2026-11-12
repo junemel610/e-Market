@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator } from 'react-native';
-import { Input } from 'react-native-elements';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-const BLACK = '#000000';
+const WHITE = '#FFFFFF';
 const AMBER = '#F59E0B';
 const GRAY = '#BEBEBE';
-const WHITE = '#FFFFFF';
-const CARD = '#111111';
+const BLACK = '#111111';
+const CARD = '#F3F4F6';
 
 const defaultProfileImage = require('../assets/profilePic.jpg');
 
@@ -87,7 +86,7 @@ const UserProfile = () => {
 
   if (loadingProfile) {
     return (
-      <View style={styles.page}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator color={AMBER} style={styles.spinner} />
         <Text style={styles.loadingText}>Loading your profile…</Text>
       </View>
@@ -143,48 +142,44 @@ const UserProfile = () => {
               <Text style={styles.subheading}>Profile details</Text>
 
               <View style={styles.field}>
-                <Input
-                  label="Username"
+                <Text style={styles.label}>Username</Text>
+                <TextInput
+                  style={styles.input}
                   placeholder="i.e. Juan23"
                   value={user.username}
-                  containerStyle={styles.inputContainer}
-                  inputStyle={styles.profileInput}
                   onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, username: text }))}
                 />
               </View>
               <View style={styles.field}>
-                <Input
-                  label="Full Name"
+                <Text style={styles.label}>Full Name</Text>
+                <TextInput
+                  style={styles.input}
                   placeholder="i.e. Juan dela Cruz"
                   value={user.fullname}
-                  containerStyle={styles.inputContainer}
-                  inputStyle={styles.profileInput}
                   onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, fullname: text }))}
                 />
               </View>
               <View style={styles.field}>
-                <Input
-                  label="Contact Number"
+                <Text style={styles.label}>Contact Number</Text>
+                <TextInput
+                  style={styles.input}
                   placeholder="+639........."
                   value={user.contactNumber.toString()}
-                  containerStyle={styles.inputContainer}
-                  inputStyle={styles.profileInput}
                   onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, contactNumber: text }))}
                 />
               </View>
               <View style={styles.field}>
-                <Input
-                  label="School Email"
+                <Text style={styles.label}>School Email</Text>
+                <TextInput
+                  style={styles.input}
                   placeholder="username@tip.edu.ph"
                   value={user.email}
-                  containerStyle={styles.inputContainer}
-                  inputStyle={styles.profileInput}
                   onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, email: text }))}
                 />
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.pickerLabel}>Program</Text>
+                <Text style={styles.label}>Program</Text>
                 <Picker
                   style={styles.profilePicker}
                   selectedValue={user.program}
@@ -197,7 +192,7 @@ const UserProfile = () => {
               </View>
 
               <View style={styles.field}>
-                <Text style={styles.pickerLabel}>Year Level</Text>
+                <Text style={styles.label}>Year Level</Text>
                 <Picker
                   style={styles.profilePicker}
                   selectedValue={user.yearLevel}
@@ -232,28 +227,24 @@ const UserProfile = () => {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: BLACK,
+    backgroundColor: WHITE,
     padding: 16,
   },
   accentTop: {
     position: 'absolute',
-    top: -40,
-    left: -40,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
     backgroundColor: AMBER,
-    opacity: 0.15,
   },
   accentBottom: {
     position: 'absolute',
-    bottom: -60,
-    right: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 20,
     backgroundColor: GRAY,
-    opacity: 0.1,
   },
   scrollContent: {
     flexGrow: 1,
@@ -263,16 +254,16 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: CARD,
+    backgroundColor: WHITE,
     borderRadius: 20,
     padding: 32,
     borderWidth: 1,
     borderColor: GRAY,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
     alignItems: 'center',
   },
   profileImage: {
@@ -286,22 +277,22 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: '800',
-    color: WHITE,
+    color: BLACK,
     marginBottom: 4,
   },
   fullName: {
     fontSize: 16,
-    color: GRAY,
+    color: '#666666',
     marginBottom: 4,
   },
   contactNumber: {
     fontSize: 14,
-    color: GRAY,
+    color: '#666666',
     marginBottom: 4,
   },
   email: {
     fontSize: 14,
-    color: GRAY,
+    color: '#666666',
     marginBottom: 8,
   },
   programYear: {
@@ -327,11 +318,6 @@ const styles = StyleSheet.create({
   },
   buttonFill: {
     backgroundColor: AMBER,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
   },
   buttonOutline: {
     borderWidth: 1,
@@ -341,9 +327,10 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 15,
     fontWeight: '800',
+    color: WHITE,
   },
   buttonOutlineText: {
-    color: WHITE,
+    color: BLACK,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -357,7 +344,7 @@ const styles = StyleSheet.create({
   subheading: {
     fontSize: 16,
     fontWeight: '700',
-    color: WHITE,
+    color: BLACK,
     marginBottom: 16,
     textAlign: 'center',
     width: '100%',
@@ -365,6 +352,25 @@ const styles = StyleSheet.create({
   field: {
     width: '100%',
     marginBottom: 16,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: AMBER,
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  input: {
+    fontSize: 16,
+    color: BLACK,
+    backgroundColor: CARD,
+    borderWidth: 1,
+    borderColor: GRAY,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    minHeight: 52,
   },
   pickerLabel: {
     fontSize: 13,
@@ -374,24 +380,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  inputContainer: {
-    width: '100%',
-    marginBottom: 0,
-  },
-  profileInput: {
-    fontSize: 16,
-    color: WHITE,
-    backgroundColor: BLACK,
-    borderWidth: 1,
-    borderColor: GRAY,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    minHeight: 52,
-  },
   profilePicker: {
-    color: WHITE,
-    backgroundColor: BLACK,
+    color: BLACK,
+    backgroundColor: CARD,
     borderWidth: 1,
     borderColor: GRAY,
     borderRadius: 10,
@@ -416,16 +407,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: CARD,
     borderRadius: 8,
   },
   itemName: {
     fontSize: 14,
-    color: WHITE,
+    color: BLACK,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingText: {
     fontSize: 15,
-    color: GRAY,
+    color: '#666666',
     marginTop: 12,
     textAlign: 'center',
   },
@@ -433,5 +429,3 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 });
-
-export default UserProfile;
