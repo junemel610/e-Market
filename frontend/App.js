@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,8 @@ import CodeVerif from "./components/CodeVerif";
 import ResetPw from "./components/ResetPw";
 import theme from './src/theme';
 import React, { useState } from 'react';
+
+const tseMarketLogo = require('./assets/TSeMarketLogo.jpg');
 
 const Stack = createStackNavigator();
 
@@ -66,8 +68,8 @@ function HomeScreen({ navigation }) {
       <View style={styles.accentBottom} />
 
       <View style={styles.card}>
-        <View style={styles.mark}>
-          <Text style={styles.markText}>TS</Text>
+        <View style={styles.markContainer}>
+          <Image source={tseMarketLogo} style={styles.markImage} />
         </View>
         <Text style={styles.heading}>TSe-Market</Text>
         <Text style={styles.subheading}>
@@ -93,8 +95,8 @@ const styles = StyleSheet.create({
   accentTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 60, backgroundColor: theme.colors.primary },
   accentBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, backgroundColor: theme.colors.border },
   card: { width: '100%', maxWidth: 360, backgroundColor: theme.colors.surface, borderRadius: 20, padding: theme.spacing.xl, borderWidth: 1, borderColor: theme.colors.border, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4, alignItems: 'center' },
-  mark: { width: 56, height: 56, borderRadius: 14, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: theme.spacing.md },
-  markText: { fontSize: 24, fontWeight: '800', color: theme.colors.onPrimary },
+  markContainer: { alignItems: 'center', marginBottom: theme.spacing.md },
+  markImage: { width: 72, height: 72, borderRadius: 16 },
   heading: { fontSize: 26, fontWeight: '800', color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.xs, lineHeight: 32 },
   subheading: { fontSize: theme.fontSize.sm, color: theme.colors.textLight, textAlign: 'center', marginBottom: theme.spacing.lg, lineHeight: 22 },
   links: { flexDirection: 'row', justifyContent: 'center', gap: theme.spacing.md, marginTop: theme.spacing.sm },

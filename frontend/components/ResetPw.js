@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import theme from '../src/theme';
+
+const tseMarketLogo = require('../assets/TSeMarketLogo.jpg');
 
 export default function ResetPassword({ navigation, route }) {
   const { email } = route.params;
@@ -45,8 +47,8 @@ export default function ResetPassword({ navigation, route }) {
       <View style={styles.accentBottom} />
 
       <View style={styles.card}>
-        <View style={styles.mark}>
-          <Text style={styles.markText}>TS</Text>
+        <View style={styles.markContainer}>
+          <Image source={tseMarketLogo} style={styles.markImage} />
         </View>
 
         <Text style={styles.heading}>Reset your password</Text>
@@ -106,8 +108,8 @@ const styles = StyleSheet.create({
   accentTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 60, backgroundColor: theme.colors.primary },
   accentBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, backgroundColor: theme.colors.border },
   card: { width: '100%', maxWidth: 360, backgroundColor: theme.colors.surface, borderRadius: 20, padding: theme.spacing.xl, borderWidth: 1, borderColor: theme.colors.border, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 },
-  mark: { width: 56, height: 56, borderRadius: 14, backgroundColor: theme.colors.primary, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: theme.spacing.md },
-  markText: { fontSize: 24, fontWeight: '800', color: theme.colors.onPrimary },
+  markContainer: { alignItems: 'center', marginBottom: theme.spacing.md },
+  markImage: { width: 72, height: 72, borderRadius: 16 },
   heading: { fontSize: 26, fontWeight: '800', color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.xs, lineHeight: 32 },
   subheading: { fontSize: theme.fontSize.sm, color: theme.colors.textLight, textAlign: 'center', marginBottom: theme.spacing.lg, lineHeight: 22 },
   field: { marginBottom: theme.spacing.md },
