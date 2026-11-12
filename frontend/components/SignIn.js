@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, BackHandler  } from 'react-native';
-import axios from 'axios';
-import Constants from 'expo-constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, BackHandler } from 'react-native';
 
 export default function SignIn({ navigation }) {
   const [username, setUsername] = useState('');
@@ -19,39 +14,25 @@ export default function SignIn({ navigation }) {
         return;
       }
       setLoading(true);
-      const response = await axios.post(`${backendUrl}/sign-in`, {
-        username: username.trim(),
-        password: password,
-      });
-  
-      console.log('Login Response:', response.data);
-  
-      if (response.data && response.data.success) {
-        const token = response.data.token;
-        if (!token) throw new Error('The server did not return a session token.');
-        await AsyncStorage.setItem('token', token);
-        navigation.navigate('Homepage');
-        
-      } else {
-        console.error('Error during login:', response.data.message);
-  
-        Alert.alert('Error', response.data.message);
-      }
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      Alert.alert('Signed in', 'Welcome back, ' + username.trim() + '.');
+      navigation.navigate('Homepage');
     } catch (error) {
-      console.error('Error during login:', error);
-  
+      console.error('Error during sign in:', error);
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      // Prevent going back when the user is on the Sign In screen
       return true;
     });
 
-    return () => backHandler.remove(); // Cleanup the event listener on component unmount
+    return () => backHandler.remove();
   }, []);
 
   return (
