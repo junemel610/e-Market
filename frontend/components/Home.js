@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, Alert, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,24 @@ const AMBER = theme.colors.primary;
 const BLACK = theme.colors.text;
 
 const Stack = createStackNavigator();
+
+const categories = [
+  { label: 'For Sale', icon: 'tag', color: '#6366F1' },
+  { label: 'Electronics', icon: 'cellphone', color: '#EC4899' },
+  { label: 'Fashion', icon: 'shirt', color: '#10B981' },
+  { label: 'Books', icon: 'book-open', color: '#F59E0B' },
+  { label: 'Home', icon: 'home', color: '#EF4444' },
+  { label: 'Services', icon: 'handyman', color: '#14B8A6' },
+];
+
+const listings = [
+  { id: 1, title: 'T-Square Ruler', price: '₱150', location: 'Sampaloc, Manila', image: require('../assets/1.jpg'), time: '2h ago' },
+  { id: 2, title: 'Architecture Scale', price: '₱280', location: 'España, Manila', image: require('../assets/2.jpg'), time: '5h ago' },
+  { id: 3, title: 'Drawing Pencil Set', price: '₱120', location: 'Quiapo, Manila', image: require('../assets/4.jpg'), time: '1d ago' },
+  { id: 4, title: 'Sketchbook A4', price: '₱180', location: 'Sampaloc, Manila', image: require('../assets/5.jpg'), time: '1d ago' },
+  { id: 5, title: 'Laptop Stand', price: '₱450', location: 'P. Gil, Manila', image: require('../assets/6.jpg'), time: '2d ago' },
+  { id: 6, title: 'Desk Organizer', price: '₱320', location: 'Legarda, Manila', image: require('../assets/1.jpg'), time: '2d ago' },
+];
 
 function HomeScreen({ navigation }) {
   const handleLogout = async () => {
@@ -42,28 +60,6 @@ function HomeScreen({ navigation }) {
   const goToMyBag = () => navigation.navigate('MyBag');
   const goToSettings = () => navigation.navigate('Settings');
 
-  const categories = [
-    { label: 'Electronics', icon: 'cellphone', color: '#6366F1' },
-    { label: 'Fashion', icon: 'shirt', color: '#EC4899' },
-    { label: 'Books', icon: 'book-open', color: '#10B981' },
-    { label: 'Home', icon: 'home', color: AMBER },
-    { label: 'Sports', icon: 'basketball', color: '#EF4444' },
-    { label: 'Auto', icon: 'car', color: '#14B8A6' },
-  ];
-
-  const flashDeals = [
-    { id: 1, name: 'T-Square Ruler', price: 150, image: require('../assets/1.jpg'), discount: '-40%' },
-    { id: 2, name: 'Architecture Scale', price: 280, image: require('../assets/2.jpg'), discount: '-25%' },
-    { id: 3, name: 'Drawing Pencil Set', price: 120, image: require('../assets/4.jpg'), discount: '-15%' },
-    { id: 4, name: 'Sketchbook A4', price: 180, image: require('../assets/5.jpg'), discount: '-30%' },
-  ];
-
-  const featuredItems = [
-    { id: 5, name: 'Laptop Stand', price: 450, image: require('../assets/6.jpg'), rating: 4.5 },
-    { id: 6, name: 'Desk Organizer', price: 320, image: require('../assets/1.jpg'), rating: 4.8 },
-    { id: 7, name: 'Mouse Pad', price: 90, image: require('../assets/2.jpg'), rating: 4.2 },
-  ];
-
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -71,84 +67,49 @@ function HomeScreen({ navigation }) {
           <View style={styles.searchBar}>
             <MaterialCommunityIcons name="magnify" size={20} color={theme.colors.placeholder} />
             <TextInput
-              placeholder="Search items, brands, stores"
+              placeholder="Search TSe-Marketplace"
               placeholderTextColor={theme.colors.placeholder}
               style={styles.searchInput}
               autoCapitalize="none"
               autoCorrect={false}
               spellCheck={false}
             />
-            <Pressable style={styles.searchButton}>
-              <MaterialCommunityIcons name="send" size={20} color={theme.colors.onPrimary} />
-            </Pressable>
           </View>
-          <Pressable style={styles.cartButton} onPress={goToMyBag} activeOpacity={0.85}>
-            <MaterialCommunityIcons name="cart" size={24} color={BLACK} />
-            <Text style={styles.cartCount}>0</Text>
+          <Pressable style={styles.sellButton} onPress={goToAddList} activeOpacity={0.85}>
+            <MaterialCommunityIcons name="plus" size={20} color={theme.colors.onPrimary} />
+            <Text style={styles.sellText}>Sell something</Text>
           </Pressable>
-        </View>
-
-        <View style={styles.promoBanner}>
-          <View style={styles.promoContent}>
-            <Text style={styles.promoTitle}>Flash Sale</Text>
-            <Text style={styles.promoSubtitle}>Up to 50% off on school essentials</Text>
-            <Pressable style={styles.promoButton}>
-              <Text style={styles.promoButtonText}>Shop now</Text>
-            </Pressable>
-          </View>
         </View>
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Categories</Text>
-          <Text style={styles.sectionSeeAll}>See all</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesContainer}>
           {categories.map((cat, index) => (
             <Pressable
               key={index}
-              style={[styles.categoryChip, cat.color === AMBER && styles.categoryChipActive]}
+              style={[styles.categoryPill, index === 0 && styles.categoryPillActive]}
               onPress={() => navigation.navigate('Search')}
               activeOpacity={0.85}
             >
-              <MaterialCommunityIcons name={cat.icon} size={20} color={cat.color} />
-              <Text style={[styles.categoryLabel, cat.color === AMBER && styles.categoryLabelActive]}>
-                {cat.label}
-              </Text>
+              <MaterialCommunityIcons name={cat.icon} size={18} color={cat.color === AMBER ? theme.colors.onPrimary : cat.color} />
+              <Text style={[styles.categoryLabel, index === 0 && styles.categoryLabelActive]}>{cat.label}</Text>
             </Pressable>
           ))}
         </ScrollView>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Flash Deals</Text>
-          <Text style={styles.sectionSeeAll}>See all</Text>
+          <Text style={styles.sectionTitle}>Marketplace listings</Text>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dealsContainer}>
-          {flashDeals.map((deal, index) => (
-            <Pressable key={index} style={styles.dealCard} onPress={() => {}} activeOpacity={0.85}>
-              <View style={styles.dealImageContainer}>
-                <Image source={deal.image} style={styles.dealImage} />
-                <Text style={styles.dealDiscount}>{deal.discount}</Text>
-              </View>
-              <Text style={styles.dealName}>{deal.name}</Text>
-              <Text style={styles.dealPrice}>₱{deal.price.toFixed(2)}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Featured Items</Text>
-          <Text style={styles.sectionSeeAll}>See all</Text>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dealsContainer}>
-          {featuredItems.map((item, index) => (
-            <Pressable key={index} style={styles.featuredCard} onPress={() => {}} activeOpacity={0.85}>
-              <Image source={item.image} style={styles.featuredImage} />
-              <Text style={styles.featuredName}>{item.name}</Text>
-              <View style={styles.featuredFooter}>
-                <Text style={styles.featuredPrice}>₱{item.price.toFixed(2)}</Text>
-                <View style={styles.ratingRow}>
-                  <MaterialCommunityIcons name="star" size={14} color={AMBER} />
-                  <Text style={styles.featuredRating}>{item.rating}</Text>
+        <ScrollView contentContainerStyle={styles.listingsContainer} showsVerticalScrollIndicator={false}>
+          {listings.map((listing, index) => (
+            <Pressable key={index} style={styles.listingCard} onPress={() => {}} activeOpacity={0.85}>
+              <Image source={listing.image} style={styles.listingImage} />
+              <View style={styles.listingInfo}>
+                <Text style={styles.listingTitle}>{listing.title}</Text>
+                <View style={styles.listingMeta}>
+                  <Text style={styles.listingPrice}>{listing.price}</Text>
+                  <Text style={styles.listingLocation}>{listing.location} · {listing.time}</Text>
                 </View>
               </View>
             </Pressable>
@@ -160,6 +121,28 @@ function HomeScreen({ navigation }) {
           <Text style={[styles.logoutText, { color: theme.colors.danger }]}>Log out</Text>
         </Pressable>
       </ScrollView>
+
+      <View style={styles.bottomNav}>
+        <Pressable style={styles.navItem} onPress={goToSearch} activeOpacity={0.85}>
+          <MaterialCommunityIcons name="magnify" size={24} color={AMBER} />
+          <Text style={[styles.navLabel, { color: AMBER }]}>Search</Text>
+        </Pressable>
+        <Pressable style={styles.navItem()} onPress={goToUserProfile} activeOpacity={0.85}>
+          <MaterialCommunityIcons name="account" size={24} color={theme.colors.textLight} />
+          <Text style={[styles.navLabel, { color: theme.colors.textLight }]}>Profile</Text>
+        </Pressable>
+        <Pressable style={styles.navFab} onPress={goToAddList} activeOpacity={0.85}>
+          <MaterialCommunityIcons name="plus" size={24} color={theme.colors.onPrimary} />
+        </Pressable>
+        <Pressable style={styles.navItem()} onPress={goToMyBag} activeOpacity={0.85}>
+          <MaterialCommunityIcons name="cart" size={24} color={theme.colors.textLight} />
+          <Text style={[styles.navLabel, { color: theme.colors.textLight }]}>Bag</Text>
+        </Pressable>
+        <Pressable style={styles.navItem()} onPress={goToSettings} activeOpacity={0.85}>
+          <MaterialCommunityIcons name="settings" size={24} color={theme.colors.textLight} />
+          <Text style={[styles.navLabel, { color: theme.colors.textLight }]}>Settings</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -260,64 +243,46 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.sm,
     marginLeft: theme.spacing.xs,
   },
-  searchButton: {
-    backgroundColor: AMBER,
-    borderRadius: 8,
-    padding: theme.spacing.sm,
-    marginLeft: theme.spacing.xs,
-  },
-  cartButton: { position: 'relative' },
-  cartCount: {
-    position: 'absolute',
-    top: -6,
-    right: -6,
-    backgroundColor: AMBER,
-    color: theme.colors.onPrimary,
-    fontSize: 10,
-    fontWeight: theme.fontWeight.bold,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    textAlign: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  promoBanner: {
-    backgroundColor: AMBER,
-    borderRadius: 16,
-    padding: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-    alignItems: 'center',
+  sellButton: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 10,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    minHeight: 44,
   },
-  promoContent: { flex: 1 },
-  promoTitle: { fontSize: 18, fontWeight: theme.fontWeight.bold, color: theme.colors.onPrimary, marginBottom: theme.spacing.xs },
-  promoSubtitle: { fontSize: theme.fontSize.sm, color: 'rgba(17,17,17,0.85)', marginBottom: theme.spacing.sm },
-  promoButton: { backgroundColor: theme.colors.onPrimary, borderRadius: 8, paddingHorizontal: theme.spacing.md, paddingVertical: theme.spacing.xs },
-  promoButtonText: { fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.bold, color: theme.colors.primary },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: theme.spacing.md, paddingHorizontal: 0 },
+  sellText: { color: theme.colors.onPrimary, fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.bold },
+  sectionHeader: { marginTop: theme.spacing.md, marginBottom: theme.spacing.sm },
   sectionTitle: { fontSize: theme.fontSize.lg, fontWeight: theme.fontWeight.bold, color: BLACK },
-  sectionSeeAll: { fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.semibold, color: AMBER },
   categoriesContainer: { paddingHorizontal: 0, gap: theme.spacing.sm },
-  categoryChip: { backgroundColor: theme.colors.surfaceMuted, borderRadius: 10, paddingHorizontal: theme.spacing.md, paddingVertical: theme.spacing.sm, alignItems: 'center', minWidth: 80 },
-  categoryChipActive: { backgroundColor: AMBER },
-  categoryLabel: { fontSize: theme.fontSize.xs, fontWeight: theme.fontWeight.bold, color: BLACK, marginTop: theme.spacing.xs },
+  categoryPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    backgroundColor: theme.colors.surfaceMuted,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 20,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    minHeight: 36,
+  },
+  categoryPillActive: {
+    backgroundColor: AMBER,
+    borderColor: AMBER,
+  },
+  categoryLabel: { fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.bold, color: BLACK },
   categoryLabelActive: { color: theme.colors.onPrimary },
-  dealsContainer: { paddingHorizontal: 0, gap: theme.spacing.sm },
-  dealCard: { width: 140, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 12, alignItems: 'center', paddingBottom: theme.spacing.sm },
-  dealImageContainer: { width: '100%', height: 120, borderTopLeftRadius: 12, borderTopRightRadius: 12, backgroundColor: theme.colors.surfaceMuted, alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' },
-  dealImage: { width: '100%', height: '100%' },
-  dealDiscount: { position: 'absolute', top: theme.spacing.xs, left: theme.spacing.xs, backgroundColor: theme.colors.danger, color: theme.colors.onPrimary, fontSize: theme.fontSize.xs, fontWeight: theme.fontWeight.bold, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4 },
-  dealName: { fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.bold, color: BLACK, marginTop: theme.spacing.sm, paddingHorizontal: theme.spacing.xs, textAlign: 'center' },
-  dealPrice: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: AMBER, marginTop: theme.spacing.xs },
-  featuredCard: { width: 120, marginRight: theme.spacing.sm, alignItems: 'center' },
-  featuredImage: { width: 100, height: 100, borderRadius: 12, backgroundColor: theme.colors.surfaceMuted, marginBottom: theme.spacing.sm },
-  featuredName: { fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.bold, color: BLACK, marginBottom: theme.spacing.xs, width: 100, textAlign: 'center' },
-  featuredFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: 100 },
-  featuredPrice: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: AMBER },
-  ratingRow: { flexDirection: 'row', alignItems: 'center' },
-  featuredRating: { fontSize: theme.fontSize.xs, color: theme.colors.textLight, marginLeft: theme.spacing.xs },
+  listingsContainer: { paddingHorizontal: 0, gap: theme.spacing.md },
+  listingCard: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 12, overflow: 'hidden', marginBottom: theme.spacing.sm },
+  listingImage: { width: '100%', height: 160 },
+  listingInfo: { padding: theme.spacing.md, gap: theme.spacing.xs },
+  listingTitle: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: BLACK },
+  listingMeta: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.xs },
+  listingPrice: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.primary },
+  listingLocation: { fontSize: theme.fontSize.xs, color: theme.colors.textLight },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -332,4 +297,21 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.md,
   },
   logoutText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, marginLeft: theme.spacing.sm },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+    paddingVertical: theme.spacing.md,
+    paddingBottom: theme.spacing.xl,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  navItem: { alignItems: 'center', paddingVertical: theme.spacing.xs },
+  navFab: { alignItems: 'center', paddingVertical: theme.spacing.xs },
+  navLabel: { fontSize: theme.fontSize.xs, fontWeight: theme.fontWeight.bold, marginTop: theme.spacing.xs },
 });
