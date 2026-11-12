@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -11,26 +11,17 @@ import MyBag from '../components/MyBag';
 import Settings from './Settings';
 import AddList from './AddList';
 
+const AMBER = '#F59E0B';
+const CREAM = '#F8FAFC';
+const MUTED = '#94A3B8';
+
 const Stack = createStackNavigator();
 
 function HomeScreen({ navigation }) {
-  const onBackPress = () => {
-    handleLogout();
-    return true; 
-  };
-
-  useEffect(() => {
-    const backHandler = navigation.addListener('beforeRemove', (e) => {
-      e.preventDefault();
-      onBackPress();
-    });
-    return () => backHandler();
-  }, [navigation]);
-
   const handleLogout = async () => {
     Alert.alert(
-      'Oh no...?',
-      'Are you sure you want to logout?',
+      'Log out',
+      'Are you sure you want to log out?',
       [
         {
           text: 'Cancel',
@@ -39,10 +30,8 @@ function HomeScreen({ navigation }) {
         {
           text: 'Confirm',
           onPress: async () => {
-            
             await new Promise((resolve) => setTimeout(resolve, 300));
-
-            Alert.alert('Successfully logged out of your account!');
+            Alert.alert('Logged out', 'See you next time.');
             navigation.navigate('Account Sign-In');
           },
         },
@@ -51,55 +40,52 @@ function HomeScreen({ navigation }) {
     );
   };
 
-  const goToAddList = () => {
-    navigation.navigate('Add Item Listing')
-  };
+  const goToAddList = () => navigation.navigate('Add Item Listing');
+  const goToSearch = () => navigation.navigate('Search');
+  const goToUserProfile = () => navigation.navigate('UserProfile');
+  const goToMyBag = () => navigation.navigate('MyBag');
+  const goToSettings = () => navigation.navigate('Settings');
 
-  const goToSearch = () => {
-    navigation.navigate('Search');
-  };
-
-  const goToUserProfile = () => {
-    navigation.navigate('UserProfile');
-  };
-
-  const goToMyBag = () => {
-    navigation.navigate('MyBag');
-  };
-
-  const goToSettings = () => {
-    navigation.navigate('Settings');
-  };
+  const dashboardItems = [
+    { label: 'Search', icon: 'shopping-search', iconComp: Icon2, color: '#A78BFA', onPress: goToSearch },
+    { label: 'Profile', icon: 'account-edit-outline', iconComp: Icon2, color: '#FBBF24', onPress: goToUserProfile },
+    { label: 'Add item', icon: 'pluscircleo', iconComp: Icon3, color: '#34D399', onPress: goToAddList },
+    { label: 'My Bag', icon: 'bag-personal-outline', iconComp: Icon2, color: '#60A5FA', onPress: goToMyBag },
+    { label: 'Settings', icon: 'settings-outline', iconComp: Icon, color: '#F472B6', onPress: goToSettings },
+  ];
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.logoContainer}>
         <Image source={require('../assets/TSeMarketLogo.jpg')} style={styles.img} />
-        <Text style={styles.text1}>Searching for second-hand items will be a click away!</Text>
+        <Text style={styles.tagline}>Second-hand finds for TIPians.</Text>
       </View>
-      <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={goToSearch} style={styles.icon} accessibilityRole="button">
-          <Icon2 name="shopping-search" size={24} color="#EFD02C" />
-          <Text style={styles.iconLabel}>Search</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={goToUserProfile} style={styles.icon} accessibilityRole="button">
-          <Icon2 name="account-edit-outline" size={24} color="#EFD02C" />
-          <Text style={styles.iconLabel}>Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={goToAddList} style={styles.icon} accessibilityRole="button">
-          <Icon3 name="pluscircleo" size={24} color="#EFD02C" />
-          <Text style={styles.iconLabel}>Add item</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={goToMyBag} style={styles.icon} accessibilityRole="button">
-          <Icon2 name="bag-personal-outline" size={24} color="#EFD02C" />
-          <Text style={styles.iconLabel}>My Bag</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={goToSettings} style={styles.icon} accessibilityRole="button">
-          <Icon name="settings-outline" size={24} color="#EFD02C" />
-          <Text style={styles.iconLabel}>Settings</Text>
-        </TouchableOpacity>
+
+      <View style={styles.grid}>
+        {dashboardItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.iconCard}
+            onPress={item.onPress}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.iconBadge, { backgroundColor: item.color + '20' }]}>
+              <item.iconComp name={item.icon} size={26} color={item.color} />
+            </View>
+            <Text style={styles.iconLabel}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
-    </View>
+
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={handleLogout}
+        activeOpacity={0.85}
+      >
+        <Icon name="log-out" size={20} color="#FCA5A5" />
+        <Text style={styles.logoutText}>Log out</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
@@ -119,68 +105,44 @@ export default function Home() {
         name="Add Item Listing"
         component={AddList}
         options={{
-          headerTitle: 'Add an Item Listing', 
+          headerTitle: 'Add an item listing',
           headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: '#545F71',
-          },
-          headerStyle: {
-            backgroundColor: '#EFD02C',
-          },
-          headerTintColor: '#545F71',
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
+          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
+          headerTintColor: CREAM,
         }}
       />
       <Stack.Screen
         name="Search"
         component={Search}
         options={{
-          headerTitle: 'Search for Items',
+          headerTitle: 'Search for items',
           headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: '#545F71',
-          },
-          headerStyle: {
-            backgroundColor: '#EFD02C',
-          },
-          headerTintColor: '#545F71',
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
+          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
+          headerTintColor: CREAM,
         }}
       />
       <Stack.Screen
         name="UserProfile"
         component={UserProfile}
         options={{
-          headerTitle: 'User Profile',
+          headerTitle: 'User profile',
           headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: '#545F71',
-          },
-          headerStyle: {
-            backgroundColor: '#EFD02C',
-          },
-          headerTintColor: '#545F71',
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
+          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
+          headerTintColor: CREAM,
         }}
       />
       <Stack.Screen
         name="MyBag"
         component={MyBag}
         options={{
-          headerTitle: 'My Bag',
+          headerTitle: 'My bag',
           headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: '#545F71',
-          },
-          headerStyle: {
-            backgroundColor: '#EFD02C',
-          },
-          headerTintColor: '#545F71',
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
+          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
+          headerTintColor: CREAM,
         }}
       />
       <Stack.Screen
@@ -189,14 +151,9 @@ export default function Home() {
         options={{
           headerTitle: 'Settings',
           headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: '#545F71',
-          },
-          headerStyle: {
-            backgroundColor: '#EFD02C',
-          },
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
+          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
+          headerTintColor: CREAM,
         }}
       />
     </Stack.Navigator>
@@ -204,49 +161,71 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#565857',
-    alignItems: 'center',
-    justifyContent: 'center',
+  scrollContent: {
+    flexGrow: 1,
+    padding: 20,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 90,
+    marginBottom: 24,
   },
   img: {
-    width: 355,
-    height: 355,
+    width: 120,
+    height: 120,
+    borderRadius: 24,
+    marginBottom: 12,
   },
-  text1: {
-    fontSize: 16,
-    color: '#EFD02C',
-    marginBottom: 30,
+  tagline: {
+    fontSize: 15,
+    color: MUTED,
     textAlign: 'center',
-    fontStyle: 'italic',
+    lineHeight: 22,
   },
-  iconContainer: {
+  grid: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
-    paddingHorizontal: 4,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 16,
+    marginBottom: 32,
   },
-  icon: {
-    marginBottom: 10,
-    backgroundColor: 'white',
-    paddingVertical: 8,
-    borderRadius: 15,
-    width: '19%',
-    minHeight: 64,
+  iconCard: {
+    width: 96,
+    alignItems: 'center',
+  },
+  iconBadge: {
+    width: 60,
+    height: 60,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   iconLabel: {
-    color: '#545F71',
-    fontSize: 10,
-    fontWeight: '600',
-    marginTop: 3,
+    fontSize: 13,
+    fontWeight: '700',
+    color: CREAM,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 12,
+    paddingVertical: 14,
+    minHeight: 52,
+    width: '100%',
+  },
+  logoutText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FCA5A5',
+    marginLeft: 8,
   },
 });

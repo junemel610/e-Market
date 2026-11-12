@@ -3,6 +3,10 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, Activ
 import { Input } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
 
+const AMBER = '#F59E0B';
+const CREAM = '#F8FAFC';
+const MUTED = '#94A3B8';
+
 const defaultProfileImage = require('../assets/profilePic.jpg');
 
 const UserProfile = () => {
@@ -63,13 +67,12 @@ const UserProfile = () => {
   }));
 
   const renderItem = ({ item }) => (
-    <View key={item.category}>
-      <Text style={styles.savedItemsCategory}>{item.category}:</Text>
-      <View style={styles.bulletList}>
+    <View key={item.category} style={styles.categoryBlock}>
+      <Text style={styles.categoryTitle}>{item.category}</Text>
+      <View style={styles.itemsList}>
         {item.items.map((savedItem) => (
-          <View key={savedItem.id} style={styles.bulletListItem}>
-            <Text style={styles.bulletPoint}>➜</Text>
-            <Text style={styles.savedItem}>{savedItem.name}</Text>
+          <View key={savedItem.id} style={styles.itemRow}>
+            <Text style={styles.itemName}>{savedItem.name}</Text>
           </View>
         ))}
       </View>
@@ -82,73 +85,21 @@ const UserProfile = () => {
 
   if (loadingProfile) {
     return (
-      <View style={styles.stateContainer}>
-        <ActivityIndicator color="#545F71" />
-        <Text style={styles.stateMessage}>Loading your profile…</Text>
+      <View style={styles.page}>
+        <ActivityIndicator color="#F59E0B" style={styles.spinner} />
+        <Text style={styles.loadingText}>Loading your profile…</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Image source={user.profileImage || defaultProfileImage} style={styles.profileImage} />
+    <View style={styles.page}>
+      <View style={styles.accentTop} />
 
-      {editing ? (
-        <>
-          <Input
-            label="Username"
-            placeholder="i.e. Juan23"
-            value={user.username}
-            onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, username: text }))}
-          />
-          <Input
-            label="Full Name"
-            placeholder="i.e. Juan dela Cruz"
-            value={user.fullname}
-            onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, fullname: text }))}
-          />
-          <Input
-            label="Contact Number"
-            placeholder="+639........."
-            value={user.contactNumber.toString()}
-            onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, contactNumber: text }))}
-          />
-          <Input
-            label="School Email"
-            placeholder="username@tip.edu.ph"
-            value={user.email}
-            onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, email: text }))}
-          />
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Select Program:</Text>
-            <Picker
-              style={styles.picker}
-              selectedValue={user.program}
-              onValueChange={(itemValue) => setUser((prevUser) => ({ ...prevUser, program: itemValue }))}
-            >
-              {programs.map((program, index) => (
-                <Picker.Item key={index} label={program} value={program} />
-              ))}
-            </Picker>
-          </View>
-          <View style={styles.pickerContainer}>
-            <Text style={styles.pickerLabel}>Select Year Level:</Text>
-            <Picker
-              style={styles.picker}
-              selectedValue={user.yearLevel}
-              onValueChange={(itemValue) => setUser((prevUser) => ({ ...prevUser, yearLevel: itemValue }))}
-            >
-              {yearLevels.map((year, index) => (
-                <Picker.Item key={index} label={year} value={year} />
-              ))}
-            </Picker>
-          </View>
-          <TouchableOpacity style={styles.editUpdateButton} onPress={handleSaveProfile} disabled={savingProfile}>
-            <Text style={styles.editUpdateButtonText}>{savingProfile ? 'Saving…' : 'Update Profile'}</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.card}>
+          <Image source={user.profileImage || defaultProfileImage} style={styles.profileImage} />
+
           <Text style={styles.userName}>{user.username}</Text>
           <Text style={styles.fullName}>{user.fullname}</Text>
           <Text style={styles.contactNumber}>{user.contactNumber}</Text>
@@ -156,129 +107,327 @@ const UserProfile = () => {
           <Text style={styles.programYear}>
             {user.program}, {user.yearLevel}
           </Text>
-          <TouchableOpacity style={styles.editUpdateButton} onPress={() => setEditing(true)}>
-            <Text style={styles.editUpdateButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-        </>
-      )}
 
-      <View style={styles.separator} />
-      <Text style={styles.savedItemsListHeader}>Your Saved Items ✅🏷️</Text>
+          <View style={styles.buttonRow}>
+            {editing ? (
+              <>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonOutline, savingProfile && styles.buttonDisabled]}
+                  onPress={handleSaveProfile}
+                  disabled={savingProfile}
+                  activeOpacity={0.85}
+                >
+                  <Text style={[styles.buttonText, styles.buttonOutlineText]}>
+                    {savingProfile ? 'Saving…' : 'Update profile'}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonFill]}
+                  onPress={() => setEditing(true)}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.buttonText}>Edit profile</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
 
-      <FlatList
-        data={savedItemsData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.category}
-      />
+          {editing && (
+            <>
+              <View style={styles.divider} />
+              <Text style={styles.subheading}>Profile details</Text>
+
+              <View style={styles.field}>
+                <Input
+                  label="Username"
+                  placeholder="i.e. Juan23"
+                  value={user.username}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.profileInput}
+                  onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, username: text }))}
+                />
+              </View>
+              <View style={styles.field}>
+                <Input
+                  label="Full Name"
+                  placeholder="i.e. Juan dela Cruz"
+                  value={user.fullname}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.profileInput}
+                  onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, fullname: text }))}
+                />
+              </View>
+              <View style={styles.field}>
+                <Input
+                  label="Contact Number"
+                  placeholder="+639........."
+                  value={user.contactNumber.toString()}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.profileInput}
+                  onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, contactNumber: text }))}
+                />
+              </View>
+              <View style={styles.field}>
+                <Input
+                  label="School Email"
+                  placeholder="username@tip.edu.ph"
+                  value={user.email}
+                  containerStyle={styles.inputContainer}
+                  inputStyle={styles.profileInput}
+                  onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, email: text }))}
+                />
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.pickerLabel}>Program</Text>
+                <Picker
+                  style={styles.profilePicker}
+                  selectedValue={user.program}
+                  onValueChange={(itemValue) => setUser((prevUser) => ({ ...prevUser, program: itemValue }))}
+                >
+                  {programs.map((program, index) => (
+                    <Picker.Item key={index} label={program} value={program} />
+                  ))}
+                </Picker>
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.pickerLabel}>Year Level</Text>
+                <Picker
+                  style={styles.profilePicker}
+                  selectedValue={user.yearLevel}
+                  onValueChange={(itemValue) => setUser((prevUser) => ({ ...prevUser, yearLevel: itemValue }))}
+                >
+                  {yearLevels.map((year, index) => (
+                    <Picker.Item key={index} label={year} value={year} />
+                  ))}
+                </Picker>
+              </View>
+            </>
+          )}
+
+          <View style={styles.divider} />
+          <Text style={styles.subheading}>Your saved items</Text>
+
+          <FlatList
+            data={savedItemsData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.category}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
+        </View>
+      </ScrollView>
+
+      <View style={styles.accentBottom} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  stateContainer: {
+  page: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
+    backgroundColor: '#1E1B4B',
+    padding: 16,
   },
-  stateMessage: {
-    marginTop: 12,
-    textAlign: 'center',
-    fontSize: 16,
+  accentTop: {
+    position: 'absolute',
+    top: -40,
+    left: -40,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#5B21B6',
+    opacity: 0.6,
   },
-  container: {
+  accentBottom: {
+    position: 'absolute',
+    bottom: -60,
+    right: -60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: '#BE185D',
+    opacity: 0.5,
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    paddingBottom: 40,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: '#4338CA',
+    borderRadius: 20,
+    padding: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
+    alignItems: 'center',
   },
   profileImage: {
-    width: 125,
-    height: 125,
-    borderRadius: 65,
-    marginTop: 20,
-    marginBottom: 10,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: AMBER,
   },
   userName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    paddingBottom: 5,
+    fontSize: 22,
+    fontWeight: '800',
+    color: CREAM,
+    marginBottom: 4,
   },
   fullName: {
-    fontSize: 20,
-    paddingBottom: 5,
+    fontSize: 16,
+    color: '#CBD5E1',
+    marginBottom: 4,
   },
   contactNumber: {
-    fontSize: 20,
-    paddingBottom: 5,
+    fontSize: 14,
+    color: MUTED,
+    marginBottom: 4,
   },
   email: {
-    fontSize: 20,
-    paddingBottom: 5,
+    fontSize: 14,
+    color: MUTED,
+    marginBottom: 8,
   },
   programYear: {
-    fontSize: 20,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FBBF24',
+    marginBottom: 24,
     fontStyle: 'italic',
-    paddingBottom: 5,
   },
-  pickerContainer: {
-    marginTop: 10,
+  buttonRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: 12,
+    marginBottom: 24,
   },
-  pickerLabel: {
-    marginRight: 10,
-    fontSize: 18,
-    paddingLeft: 20,
-  },
-  picker: {
-    flex: 1,
-  },
-  separator: {
-    borderBottomWidth: 3,
-    borderBottomColor: 'gray',
-    marginTop: 10,
-    marginBottom: 10,
-    width: '80%',
-  },
-  editUpdateButton: {
-    backgroundColor: 'gray',
-    padding: 10,
-    borderRadius: 5,
+  button: {
+    borderRadius: 10,
+    paddingVertical: 12,
+    minWidth: 140,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 15,
-    marginBottom: 10,
+    flex: 1,
   },
-  editUpdateButtonText: {
-    fontSize: 18,
-    color: 'black',
-    fontWeight: 'bold',
+  buttonFill: {
+    backgroundColor: AMBER,
+    shadowColor: '#B45309',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  savedItemsListHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 9,
-    marginBottom: 15,
+  buttonOutline: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'transparent',
   },
-  savedItemsCategory: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    marginLeft: 15,
+  buttonText: {
+    fontSize: 15,
+    fontWeight: '800',
   },
-  savedItem: {
+  buttonOutlineText: {
+    color: CREAM,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginVertical: 24,
+  },
+  subheading: {
     fontSize: 16,
-    paddingBottom: 3,
+    fontWeight: '700',
+    color: CREAM,
+    marginBottom: 16,
+    textAlign: 'center',
+    width: '100%',
   },
-  bulletList: {
-    marginLeft: 20,
+  field: {
+    width: '100%',
+    marginBottom: 16,
   },
-  bulletListItem: {
+  pickerLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#CBD5E1',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 0,
+  },
+  profileInput: {
+    fontSize: 16,
+    color: CREAM,
+    backgroundColor: '#3730A3',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    minHeight: 52,
+  },
+  profilePicker: {
+    color: CREAM,
+    backgroundColor: '#3730A3',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    minHeight: 52,
+    width: '100%',
+  },
+  categoryBlock: {
+    width: '100%',
+    marginBottom: 16,
+  },
+  categoryTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FBBF24',
+    marginBottom: 8,
+  },
+  itemsList: {
+    gap: 8,
+  },
+  itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 8,
   },
-  bulletPoint: {
-    fontSize: 18,
-    marginRight: 5,
+  itemName: {
+    fontSize: 14,
+    color: CREAM,
+  },
+  loadingText: {
+    fontSize: 15,
+    color: MUTED,
+    marginTop: 12,
+    textAlign: 'center',
+  },
+  spinner: {
+    marginBottom: 12,
   },
 });
-
-export default UserProfile;

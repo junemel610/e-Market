@@ -4,6 +4,9 @@ import { Slider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 
+const AMBER = '#F59E0B';
+const CREAM = '#F8FAFC';
+const MUTED = '#94A3B8';
 
 const Settings = ({ navigation }) => {
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -33,8 +36,8 @@ const Settings = ({ navigation }) => {
 
   const goToSignIn = async () => {
     Alert.alert(
-      'Oh no...?',
-      'Are you sure you want to logout?',
+      'Log out',
+      'Are you sure you want to log out?',
       [
         {
           text: 'Cancel',
@@ -44,10 +47,7 @@ const Settings = ({ navigation }) => {
           text: 'Confirm',
           onPress: async () => {
             await new Promise((resolve) => setTimeout(resolve, 300));
-
-            Alert.alert('Successfully logged out of your account!');
-  
-            // Replace the current screen with the Sign-In screen
+            Alert.alert('Logged out', 'See you next time.');
             navigation.navigate('Account Sign-In');
           },
         },
@@ -55,269 +55,307 @@ const Settings = ({ navigation }) => {
       { cancelable: false }
     );
   };
-  
-  
 
   return (
-    <View style={[styles.container, darkModeEnabled && styles.darkModeContainer]}>
-      <View style={styles.appVersionContainer}>
-        <Text style={styles.appVersionLabel}>App Version</Text>
-        <Text style={styles.appVersionValue}>v1.0.0</Text>
-      </View>
-      <View style={styles.settingRow}>
-        <Text style={styles.settingText}>Dark Mode (this screen only)</Text>
-        <Switch value={darkModeEnabled} onValueChange={toggleDarkMode} />
-      </View>
-      <TouchableOpacity style={styles.policiesButton} onPress={togglePolicies}>
-        <Text style={styles.policiesButtonText}>View App Policies</Text>
-      </TouchableOpacity>
-      {showPolicies && (
-        <ScrollView style={styles.policiesContainer}>
-          <Text style={styles.policiesText}>
-            IMPORTANT: Sellers should provide the right items to consumers.
-            Consumers should not scam the sellers into buying the items.
-          </Text>
-          <Text style={styles.policiesText2}>
-          From Team Nebula 🌌
-          </Text>
-        </ScrollView>
-      )}
-      <TouchableOpacity style={styles.feedbackButton} onPress={toggleCommentBox}>
-        <Text style={styles.feedbackButtonText}>Send your Feedback</Text>
-      </TouchableOpacity>
-      {showCommentBox && (
-        <View>
-          <TextInput
-            placeholder="Write what you think..."
-            value={userComment}
-            onChangeText={(text) => setUserComment(text)}
-            style={[styles.commentInput, { height: 100, textAlignVertical: 'top', paddingLeft: 10,  }]} // Adjust the paddingLeft as needed
-          />
-          <View style={styles.sliderAndSubmitContainer}>
-            <View style={styles.ratingContainer}>
-              <Text style={[styles.ratingLabel, { textAlign: 'center' }]}>
-                ⭐ ⭐ ⭐ Rate TSe-Market! (1-5) ⭐ ⭐ ⭐
-              </Text>
-              <Slider
-                minimumValue={1}
-                maximumValue={5}
-                step={1}
-                value={selectedRating}
-                onValueChange={(value) => setSelectedRating(value)}
-                thumbStyle={styles.sliderThumb}
-                thumbTintColor="#EFD02C"
-                trackStyle={styles.sliderTrack}
-                minimumTrackTintColor="#EFD02C"
-                maximumTrackTintColor="gray"
-              />
-              <Text style={styles.ratingValue}>{selectedRating}</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.commentSubmitButton}
-              onPress={submitComment}
-            >
-              <Text style={styles.commentSubmitButtonText}>Submit</Text>
-            </TouchableOpacity>
+    <View style={[styles.page, darkModeEnabled && styles.darkModePage]}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={[styles.card, darkModeEnabled && styles.darkModeCard]}>
+          <View style={styles.headerRow}>
+            <Text style={styles.heading}>Settings</Text>
+            <Text style={styles.appVersion}>v1.0.0</Text>
           </View>
+
+          <View style={styles.settingRow}>
+            <Text style={[styles.settingText, darkModeEnabled && styles.darkModeText]}>
+              Dark mode (this screen only)
+            </Text>
+            <Switch value={darkModeEnabled} onValueChange={toggleDarkMode} />
+          </View>
+
+          <TouchableOpacity style={styles.buttonRow} onPress={togglePolicies} activeOpacity={0.85}>
+            <Text style={[styles.buttonText, darkModeEnabled && styles.darkModeText]}>
+              View app policies
+            </Text>
+            <Icon name="chevron-right" size={18} color={MUTED} />
+          </TouchableOpacity>
+
+          {showPolicies && (
+            <View style={[styles.policiesCard, darkModeEnabled && styles.darkModeCard]}>
+              <Text style={[styles.policiesText, darkModeEnabled && styles.darkModeText]}>
+                Sellers should provide the right items to consumers. Consumers should not scam sellers.
+              </Text>
+              <Text style={[styles.policiesFooter, darkModeEnabled && styles.darkModeMuted]}>
+                From Team Nebula
+              </Text>
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.buttonRow} onPress={toggleCommentBox} activeOpacity={0.85}>
+            <Text style={[styles.buttonText, darkModeEnabled && styles.darkModeText]}>
+              Send feedback
+            </Text>
+            <Icon name="chevron-right" size={18} color={MUTED} />
+          </TouchableOpacity>
+
+          {showCommentBox && (
+            <View style={[styles.commentCard, darkModeEnabled && styles.darkModeCard]}>
+              <TextInput
+                placeholder="Write what you think…"
+                value={userComment}
+                onChangeText={(text) => setUserComment(text)}
+                style={[styles.commentInput, darkModeEnabled && styles.darkModeInput]}
+                multiline
+                numberOfLines={4}
+              />
+              <View style={styles.ratingCard}>
+                <Text style={[styles.ratingLabel, darkModeEnabled && styles.darkModeText]}>
+                  Rate TSe-Market (1-5)
+                </Text>
+                <Slider
+                  minimumValue={1}
+                  maximumValue={5}
+                  step={1}
+                  value={selectedRating}
+                  onValueChange={(value) => setSelectedRating(value)}
+                  thumbStyle={styles.sliderThumb}
+                  trackStyle={styles.sliderTrack}
+                  minimumTrackTintColor={AMBER}
+                  maximumTrackTintColor='rgba(255,255,255,0.2)'
+                />
+                <Text style={[styles.ratingValue, darkModeEnabled && styles.darkModeText]}>
+                  {selectedRating}
+                </Text>
+              </View>
+              <TouchableOpacity style={[styles.button, styles.buttonFill]} onPress={submitComment} activeOpacity={0.85}>
+                <Text style={styles.buttonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.buttonRow} onPress={goToSignIn} activeOpacity={0.85}>
+            <Icon name="logout" size={20} color="#FCA5A5" />
+            <Text style={[styles.buttonText, { color: '#FCA5A5' }]}>Log out</Text>
+          </TouchableOpacity>
         </View>
-      )}
+      </ScrollView>
+
       <Modal
         isVisible={isFeedbackMessageModalVisible}
         onBackdropPress={() => setIsFeedbackMessageModalVisible(false)}
+        style={styles.modalOverlay}
       >
-        <View style={styles.feedbackModal}>
-          <Text style={styles.feedbackModalText}>
+        <View style={[styles.feedbackModal, darkModeEnabled && styles.darkModeModal]}>
+          <Text style={[styles.feedbackModalText, darkModeEnabled && styles.darkModeText]}>
             {feedbackMessage}
           </Text>
-          <TouchableOpacity
-            style={styles.closeFeedbackModalButton}
-            onPress={() => setIsFeedbackMessageModalVisible(false)}
-          >
-            <Text style={styles.closeFeedbackModalButtonText}>Close</Text>
+          <TouchableOpacity style={[styles.button, styles.buttonFill]} onPress={() => setIsFeedbackMessageModalVisible(false)} activeOpacity={0.85}>
+            <Text style={styles.buttonText}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.iconNav} onPress={goToSignIn}>
-          <Icon name="logout" size={25} color="black" />
-          <Text style={styles.iconLabel}>LOGOUT</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  page: {
     flex: 1,
-    padding: 16,
+    backgroundColor: '#1E1B4B',
+    padding: 20,
   },
-  darkModeContainer: {
-    backgroundColor: '#545454',
+  darkModePage: {
+    backgroundColor: '#0F172A',
   },
-  appVersionContainer: {
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: '#4338CA',
+    borderRadius: 20,
+    padding: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  darkModeCard: {
+    backgroundColor: '#1E293B',
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  darkModePage: {
+    backgroundColor: '#0F172A',
+  },
+  darkModeText: {
+    color: CREAM,
+  },
+  darkModeMuted: {
+    color: MUTED,
+  },
+  darkModeInput: {
+    color: CREAM,
+  },
+  darkModeModal: {
+    backgroundColor: '#1E293B',
+  },
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 24,
   },
-  appVersionLabel: {
-    fontSize: 18,
-    marginRight: 10,
-    fontWeight: 'bold',
+  heading: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: CREAM,
   },
-  appVersionValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'gray',
+  appVersion: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FBBF24',
   },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   settingText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '600',
+    color: CREAM,
   },
-  policiesButton: {
-    backgroundColor: '#D3D3D3',
-    padding: 10,
-    borderRadius: 5,
+  buttonRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    minHeight: 52,
+    marginBottom: 12,
   },
-  policiesButtonText: {
-    fontSize: 18,
-    color: 'black',
-    fontWeight: 'bold',
+  buttonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: CREAM,
   },
-  policiesContainer: {
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    maxHeight: 120,
+  policiesCard: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
   },
   policiesText: {
-    fontSize: 15,
-    color: 'black',
-    fontStyle: 'italic',
-    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#CBD5E1',
+    lineHeight: 20,
+    marginBottom: 8,
   },
-  policiesText2: {
-    fontSize: 15,
-    color: 'black',
-    fontStyle: 'italic',
-    fontWeight: 'bold',
+  policiesFooter: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#FBBF24',
     textAlign: 'right',
-    marginTop: 15
+  },
+  commentCard: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
   },
   commentInput: {
-    fontSize: 17,
-    color: 'black',
-    fontStyle: 'italic',
-    marginBottom: 20,
-    borderColor: '#D3D3D3',
-    borderWidth: 3,
-    marginTop: 10,
-  },
-  commentSubmitButtonText: {
-    fontSize: 17,
-    color: 'black',
-    fontWeight: 'bold',
-  },
-  commentSubmitButton: {
-    backgroundColor: '#EFD02C',
-    paddingVertical: 15,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  feedbackButton: {
-    backgroundColor: 'lightgray',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 15,
-    marginBottom: 10,
-  },
-  feedbackButtonText: {
-    fontSize: 18,
-    color: 'black',
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  iconNav: {
-    backgroundColor: '#EFD02C',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconLabel: {
-    textAlign: 'center',
     fontSize: 15,
-    fontWeight: 'bold',
+    color: CREAM,
+    backgroundColor: '#3730A3',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    textAlignVertical: 'top',
+    minHeight: 120,
+    marginBottom: 16,
   },
-  ratingContainer: {
-    marginBottom: 10,
+  ratingCard: {
+    marginBottom: 16,
   },
   ratingLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
-  },
-  ratingValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '700',
+    color: CREAM,
+    marginBottom: 12,
   },
   sliderThumb: {
-    width: 20,
-    height: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: CREAM,
     borderWidth: 2,
-    borderColor: '#EFD02C',
+    borderColor: AMBER,
   },
   sliderTrack: {
-    height: 5,
+    height: 6,
+    borderRadius: 3,
   },
-  sliderAndSubmitContainer: {
-    marginBottom: 10,
-  },
-  feedbackModal: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-  },
-  feedbackModalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  ratingValue: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FBBF24',
+    marginTop: 8,
     textAlign: 'center',
-    marginBottom: 10,
   },
-  closeFeedbackModalButton: {
-    backgroundColor: '#EFD02C',
-    padding: 10,
-    borderRadius: 5,
+  button: {
+    borderRadius: 10,
+    paddingVertical: 14,
+    minHeight: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeFeedbackModalButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
+  buttonFill: {
+    backgroundColor: AMBER,
+    shadowColor: '#B45309',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  feedbackModal: {
+    backgroundColor: '#4338CA',
+    borderRadius: 20,
+    padding: 32,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  feedbackModalText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: CREAM,
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  modalOverlay: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });
-
-export default Settings;

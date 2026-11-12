@@ -25,7 +25,7 @@ export default function Input({ onSignInPress }) {
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.inputGroup}>
       <View style={styles.container}>
-        <Text style={styles.textColor}>Username</Text>
+        <Text style={styles.textColor}>Username or email</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
@@ -33,6 +33,8 @@ export default function Input({ onSignInPress }) {
           autoCapitalize="none"
           textContentType="username"
           accessibilityLabel="Username or email"
+          autoCorrect={false}
+          spellCheck={false}
           onChangeText={(text) => { setUsername(text); setErrorMessage(''); }}
         />
       </View>
@@ -45,17 +47,20 @@ export default function Input({ onSignInPress }) {
           value={password}
           textContentType="password"
           accessibilityLabel="Password"
+          autoCorrect={false}
+          spellCheck={false}
           onChangeText={(text) => { setPassword(text); setErrorMessage(''); }}
         />
       </View>
+      {!!errorMessage && <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text>}
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleSignInPress}
         disabled={loading}
+        activeOpacity={0.85}
       >
-        <Text style={styles.createButtonText}>{loading ? 'Signing in…' : 'Log In'}</Text>
+        <Text style={styles.createButtonText}>{loading ? 'Signing in…' : 'Sign in'}</Text>
       </TouchableOpacity>
-      {!!errorMessage && <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text>}
     </KeyboardAvoidingView>
   );
 }
@@ -69,35 +74,45 @@ const styles = StyleSheet.create({
   },
   input: {
     padding: 10,
-    minHeight: 44,
-    borderColor: '#EFD02C',
+    minHeight: 52,
+    borderColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
-    fontSize: 18,
+    fontSize: 16,
     borderRadius: 10,
     fontStyle: 'italic',
     width: 300,
-    color: '#EFD02C',
+    color: '#F8FAFC',
+    backgroundColor: '#3730A3',
   },
   container: {
     width: '100%',
     padding: 10,
   },
   textColor: {
-    color: '#EFD02C',
-    marginBottom: 5,
+    color: '#CBD5E1',
+    marginBottom: 8,
+    fontSize: 13,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   createButton: {
-    backgroundColor: '#EFD02C',
-    paddingVertical: 10,
-    minHeight: 44,
+    backgroundColor: '#F59E0B',
+    paddingVertical: 14,
+    minHeight: 52,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 30,
+    borderRadius: 10,
+    marginTop: 8,
+    shadowColor: '#B45309',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
   },
   createButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#545F71',
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E1B4B',
   },
-  error: { color: '#FFD2D2', marginTop: 12, textAlign: 'center' },
+  error: { color: '#FCA5A5', marginTop: 12, textAlign: 'center', fontSize: 13 },
 });

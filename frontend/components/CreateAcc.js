@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
+const AMBER = '#F59E0B';
+const CREAM = '#F8FAFC';
+const MUTED = '#94A3B8';
+
 const programs = [
   'Computer Science',
   'Computer Engineering',
@@ -22,16 +26,16 @@ const CreateAcc = ({ navigation }) => {
   const [selectedProgram, setSelectedProgram] = useState('');
   const [selectedYearLevel, setSelectedYearLevel] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCreateAccount = async () => {
     try {
       if (loading) return;
       if (!email.trim() || !username.trim() || !password || !fullname.trim() || !contactNumber.trim() || !selectedProgram || !selectedYearLevel) {
-        alert('All fields are required');
-        console.error('All fields are required');
+        setError('All fields are required.');
         return;
       }
-
+      setError('');
       setLoading(true);
 
       await new Promise((resolve) => setTimeout(resolve, 800));
@@ -47,149 +51,296 @@ const CreateAcc = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollView}>
-      <View style={styles.container}>
-        <Text style={styles.header}>Create an account</Text>
-        <Text style={styles.text1}>Enter your account details below:</Text>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            accessibilityLabel="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            onChangeText={(text) => setEmail(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Username</Text>
-          <TextInput
-            style={styles.input}
-            accessibilityLabel="Username"
-            textContentType="username"
-            onChangeText={(text) => setUsername(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            accessibilityLabel="Password"
-            textContentType="newPassword"
-            onChangeText={(text) => setPassword(text)}
-            secureTextEntry
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            accessibilityLabel="Full name"
-            onChangeText={(text) => setFullName(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contact Number</Text>
-          <TextInput
-            style={styles.input}
-            accessibilityLabel="Contact number"
-            keyboardType="phone-pad"
-            onChangeText={(text) => setContactNumber(text)}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Program</Text>
-          <Picker
-            style={styles.input}
-            selectedValue={selectedProgram}
-            onValueChange={(itemValue) => setSelectedProgram(itemValue)}
+    <View style={styles.page}>
+      <View style={styles.accentTop} />
+      <View style={styles.accentBottom} />
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.card}>
+          <View style={styles.mark}>
+            <Text style={styles.markText}>TS</Text>
+          </View>
+
+          <Text style={styles.heading}>Create account</Text>
+          <Text style={styles.subheading}>
+            Join TSe-Market and start trading with fellow TIPians.
+          </Text>
+
+          {!!error && <Text style={styles.errorText}>{error}</Text>}
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              accessibilityLabel="Email"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoCorrect={false}
+              spellCheck={false}
+              value={email}
+              onChangeText={(text) => { setEmail(text); setError(''); }}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              accessibilityLabel="Username"
+              textContentType="username"
+              autoCorrect={false}
+              spellCheck={false}
+              value={username}
+              onChangeText={(text) => { setUsername(text); setError(''); }}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              accessibilityLabel="Password"
+              textContentType="newPassword"
+              autoCorrect={false}
+              spellCheck={false}
+              value={password}
+              secureTextEntry
+              onChangeText={(text) => { setPassword(text); setError(''); }}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput
+              style={styles.input}
+              accessibilityLabel="Full name"
+              autoCorrect={false}
+              spellCheck={false}
+              value={fullname}
+              onChangeText={(text) => { setFullName(text); setError(''); }}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Contact Number</Text>
+            <TextInput
+              style={styles.input}
+              accessibilityLabel="Contact number"
+              keyboardType="phone-pad"
+              value={contactNumber}
+              onChangeText={(text) => { setContactNumber(text); setError(''); }}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Program</Text>
+            <Picker
+              style={styles.picker}
+              selectedValue={selectedProgram}
+              onValueChange={(itemValue) => { setSelectedProgram(itemValue); setError(''); }}
+            >
+              <Picker.Item label="Select Program" value="" />
+              {programs.map((program, index) => (
+                <Picker.Item key={index} label={program} value={program} />
+              ))}
+            </Picker>
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Year Level</Text>
+            <Picker
+              style={styles.picker}
+              selectedValue={selectedYearLevel}
+              onValueChange={(itemValue) => { setSelectedYearLevel(itemValue); setError(''); }}
+            >
+              <Picker.Item label="Select Year Level" value="" />
+              {yearLevels.map((level, index) => (
+                <Picker.Item key={index} label={level} value={level} />
+              ))}
+            </Picker>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleCreateAccount}
+            disabled={loading}
+            activeOpacity={0.85}
           >
-            <Picker.Item label="Select Program" value="" />
-            {programs.map((program, index) => (
-              <Picker.Item key={index} label={program} value={program} />
-            ))}
-          </Picker>
+            <Text style={styles.buttonText}>
+              {loading ? 'Creating account…' : 'Sign up'}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.footerRow}>
+            <Text style={styles.footerText}>Already have an account? </Text>
+            <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('Account Sign-In')}>
+              <Text style={styles.linkText}>Sign in</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Year Level</Text>
-          <Picker
-            style={styles.input}
-            selectedValue={selectedYearLevel}
-            onValueChange={(itemValue) => setSelectedYearLevel(itemValue)}
-          >
-            <Picker.Item label="Select Year Level" value="" />
-            {yearLevels.map((level, index) => (
-              <Picker.Item key={index} label={level} value={level} />
-            ))}
-          </Picker>
-        </View>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={handleCreateAccount}
-          disabled={loading}
-        >
-          <Text style={styles.createButtonText}>{loading ? 'Creating account…' : 'Sign Up'}</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  page: {
     flex: 1,
-    backgroundColor: '#545454',
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+    backgroundColor: '#1E1B4B',
+    padding: 16,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#EFD02C',
-    marginBottom: 10,
+  accentTop: {
+    position: 'absolute',
+    top: -40,
+    left: -40,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: '#5B21B6',
+    opacity: 0.6,
   },
-  text1: {
-    fontSize: 17,
-    color: '#EFD02C',
-    marginBottom: 30,
+  accentBottom: {
+    position: 'absolute',
+    bottom: -60,
+    right: -60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: '#BE185D',
+    opacity: 0.5,
   },
-  inputContainer: {
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+  },
+  card: {
     width: '100%',
+    maxWidth: 360,
+    backgroundColor: '#4338CA',
+    borderRadius: 20,
+    padding: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  mark: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    backgroundColor: AMBER,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  markText: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1E1B4B',
+  },
+  heading: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: CREAM,
+    textAlign: 'center',
+    marginBottom: 8,
+    lineHeight: 32,
+  },
+  subheading: {
+    fontSize: 15,
+    color: MUTED,
+    textAlign: 'center',
+    marginBottom: 28,
+    lineHeight: 22,
+  },
+  errorText: {
+    fontSize: 13,
+    color: '#FCA5A5',
+    marginBottom: 14,
+    textAlign: 'center',
+  },
+  field: {
+    marginBottom: 16,
   },
   label: {
-    fontSize: 18,
-    color: '#EFD02C',
-    marginBottom: 5,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#CBD5E1',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   input: {
-    width: '100%',
-    height: 40,
-    minHeight: 44,
-    padding: 10,
-    borderColor: '#EFD02C',
+    fontSize: 16,
+    color: CREAM,
+    backgroundColor: '#3730A3',
     borderWidth: 1,
-    fontSize: 18,
-    borderRadius: 5,
-    color: '#EFD02C',
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    minHeight: 52,
   },
-  createButton: {
-    backgroundColor: '#EFD02C',
-    paddingVertical: 10,
-    minHeight: 44,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 30,
+  picker: {
+    color: CREAM,
+    backgroundColor: '#3730A3',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    minHeight: 52,
   },
-  createButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#545F71',
+  button: {
+    backgroundColor: AMBER,
+    borderRadius: 10,
+    paddingVertical: 14,
+    minHeight: 52,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 20,
+    shadowColor: '#B45309',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  scrollView: {
-    flexGrow: 1,
+  buttonDisabled: {
+    opacity: 0.6,
+    backgroundColor: '#D97706',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E1B4B',
+  },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: MUTED,
+  },
+  link: {
+    alignSelf: 'center',
+  },
+  linkText: {
+    fontSize: 14,
+    color: '#FBBF24',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
 
