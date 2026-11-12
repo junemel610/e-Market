@@ -5,16 +5,18 @@ export default function SignIn({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSignInAccount = async () => {
-    try {
-      if (loading) return;
-      if (!username.trim() || !password) {
-        Alert.alert('Sign in required', 'Enter your username or email and password.');
-        return;
-      }
-      setLoading(true);
+    if (loading) return;
+    if (!username.trim() || !password) {
+      setError('Enter your username or email and password.');
+      return;
+    }
+    setError('');
+    setLoading(true);
 
+    try {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       Alert.alert('Signed in', 'Welcome back, ' + username.trim() + '.');
@@ -37,53 +39,69 @@ export default function SignIn({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Welcome, dear TIPian!</Text>
-      <Text style={styles.text1}>Log in below and enter your credentials:</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your username"
-          autoCapitalize="none"
-          textContentType="username"
-          accessibilityLabel="Username or email"
-          onChangeText={(text) => setUsername(text)}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          secureTextEntry
-          textContentType="password"
-          accessibilityLabel="Password"
-          onChangeText={(text) => setPassword(text)}
-        />
-      </View>
-      <TouchableOpacity
-        style={styles.createButton}
-        onPress={handleSignInAccount}
-        disabled={loading}
-      >
-        <Text style={styles.createButtonText}>{loading ? 'Signing in…' : 'Sign In'}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.newAccountButton}
-        onPress={() => navigation.navigate('Forgot Password')}
-      >
-        <View style={styles.but}>
-          <Text style={styles.style2}>Forgot Password?</Text>
+      <View style={styles.card}>
+        <Text style={styles.heading}>Welcome back</Text>
+        <Text style={styles.subheading}>Sign in to your TSe-Market account</Text>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Username or email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your username or email"
+            autoCapitalize="none"
+            textContentType="username"
+            accessibilityLabel="Username or email"
+            autoCorrect={false}
+            spellCheck={false}
+            value={username}
+            onChangeText={(text) => { setUsername(text); setError(''); }}
+          />
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.newAccountButton}
-        onPress={() => navigation.navigate('Create Account')}
-      >
-        <View style={styles.but}>
-          <Text style={styles.style2}>New Here? Create an Account</Text>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your password"
+            secureTextEntry
+            textContentType="password"
+            accessibilityLabel="Password"
+            value={password}
+            onChangeText={(text) => { setPassword(text); setError(''); }}
+          />
         </View>
-      </TouchableOpacity>
+
+        {!!error && <Text style={styles.errorText}>{error}</Text>}
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSignInAccount}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? 'Signing in…' : 'Sign in'}
+          </Text>
+        </TouchableOpacity>
+
+        <View style={styles.divider}>
+          <Text style={styles.dividerText}>Or</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => navigation.navigate('Forgot Password')}
+        >
+          <Text style={styles.linkText}>Forgot password?</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => navigation.navigate('Create Account')}
+        >
+          <Text style={styles.linkText}>Create an account</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -91,64 +109,89 @@ export default function SignIn({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#545454',
-    justifyContent: 'center',
+    backgroundColor: '#0F172A',
     alignItems: 'center',
-    padding: 20,
+    justifyContent: 'center',
+    padding: 24,
   },
-  but: {
-    paddingBottom: 10,
-    paddingTop: 30,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#EFD02C',
-    marginBottom: 10,
-  },
-  text1: {
-    fontSize: 17,
-    color: '#EFD02C',
-    marginBottom: 30,
-  },
-  inputContainer: {
+  card: {
     width: '100%',
-    marginBottom: 20,
+    maxWidth: 400,
+    padding: 32,
+    backgroundColor: '#1E293B',
+    borderRadius: 16,
+  },
+  heading: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#F8FAFC',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  subheading: {
+    fontSize: 16,
+    color: '#94A3B8',
+    marginBottom: 32,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  field: {
+    marginBottom: 16,
   },
   label: {
-    fontSize: 18,
-    color: '#EFD02C',
-    marginBottom: 5,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#CBD5E1',
+    marginBottom: 8,
   },
   input: {
-    width: '100%',
-    height: 40,
-    minHeight: 44,
-    padding: 10,
-    borderColor: '#EFD02C',
+    fontSize: 16,
+    color: '#F8FAFC',
+    backgroundColor: '#0F172A',
     borderWidth: 1,
-    fontSize: 18,
-    borderRadius: 5,
-    color: '#EFD02C',
+    borderColor: '#334155',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    minHeight: 48,
   },
-  createButton: {
-    backgroundColor: '#EFD02C',
-    paddingVertical: 10,
-    minHeight: 44,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 30,
-  },
-  createButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#545F71',
-  },
-  style2: {
-    fontSize: 15,
+  errorText: {
+    fontSize: 13,
+    color: '#F87171',
+    marginBottom: 16,
     textAlign: 'center',
-    fontWeight: 'bold',
-    color: '#EFD02C',
+  },
+  button: {
+    backgroundColor: '#F59E0B',
+    borderRadius: 8,
+    paddingVertical: 14,
+    minHeight: 48,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0F172A',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerText: {
+    fontSize: 13,
+    color: '#64748B',
+    marginHorizontal: 12,
+  },
+  linkButton: {
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: 15,
+    color: '#F59E0B',
+    fontWeight: '500',
     textDecorationLine: 'underline',
   },
 });
