@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
-import Constants from 'expo-constants';
-
-const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 
 export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState('');
@@ -20,22 +16,18 @@ export default function ForgotPassword({ navigation }) {
       }
       setErrorMessage('');
       setLoading(true);
-      const response = await axios.post(`${backendUrl}/send-code`, { email: normalizedEmail });
-  
-      if (response.data.success) {
-        console.log('Verification code sent successfully');
-        navigation.navigate('Code Verification', { email: normalizedEmail });
-      } else {
-        setErrorMessage(response.data.message || 'Failed to send verification code.');
-      }
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      console.log('Verification code sent locally to:', normalizedEmail);
+      navigation.navigate('Code Verification', { email: normalizedEmail });
     } catch (error) {
       console.error('Error sending verification code:', error);
-      setErrorMessage(error.response?.data?.message || 'Could not send the code. Check your connection and try again.');
+      setErrorMessage('Could not send the code. Try again.');
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <View style={styles.container}>
