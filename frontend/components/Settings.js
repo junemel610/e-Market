@@ -4,22 +4,19 @@ import { Slider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
 
+const WHITE = '#FFFFFF';
 const AMBER = '#F59E0B';
-const CREAM = '#F8FAFC';
-const MUTED = '#94A3B8';
+const GRAY = '#BEBEBE';
+const BLACK = '#111111';
+const CARD = '#F3F4F6';
 
 const Settings = ({ navigation }) => {
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
   const [showPolicies, setShowPolicies] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [userComment, setUserComment] = useState('');
   const [selectedRating, setSelectedRating] = useState(1);
   const [isFeedbackMessageModalVisible, setIsFeedbackMessageModalVisible] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState('');
-
-  const toggleDarkMode = () => {
-    setDarkModeEnabled((prevDarkMode) => !prevDarkMode);
-  };
 
   const togglePolicies = () => {
     setShowPolicies((prev) => !prev);
@@ -57,60 +54,47 @@ const Settings = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.page, darkModeEnabled && styles.darkModePage]}>
+    <View style={styles.page}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={[styles.card, darkModeEnabled && styles.darkModeCard]}>
+        <View style={styles.card}>
           <View style={styles.headerRow}>
             <Text style={styles.heading}>Settings</Text>
             <Text style={styles.appVersion}>v1.0.0</Text>
           </View>
 
-          <View style={styles.settingRow}>
-            <Text style={[styles.settingText, darkModeEnabled && styles.darkModeText]}>
-              Dark mode (this screen only)
-            </Text>
-            <Switch value={darkModeEnabled} onValueChange={toggleDarkMode} />
-          </View>
-
           <TouchableOpacity style={styles.buttonRow} onPress={togglePolicies} activeOpacity={0.85}>
-            <Text style={[styles.buttonText, darkModeEnabled && styles.darkModeText]}>
-              View app policies
-            </Text>
-            <Icon name="chevron-right" size={18} color={MUTED} />
+            <Text style={styles.buttonText}>View app policies</Text>
+            <Icon name="chevron-right" size={18} color={GRAY} />
           </TouchableOpacity>
 
           {showPolicies && (
-            <View style={[styles.policiesCard, darkModeEnabled && styles.darkModeCard]}>
-              <Text style={[styles.policiesText, darkModeEnabled && styles.darkModeText]}>
+            <View style={styles.policiesCard}>
+              <Text style={styles.policiesText}>
                 Sellers should provide the right items to consumers. Consumers should not scam sellers.
               </Text>
-              <Text style={[styles.policiesFooter, darkModeEnabled && styles.darkModeMuted]}>
+              <Text style={styles.policiesFooter}>
                 From Team Nebula
               </Text>
             </View>
           )}
 
           <TouchableOpacity style={styles.buttonRow} onPress={toggleCommentBox} activeOpacity={0.85}>
-            <Text style={[styles.buttonText, darkModeEnabled && styles.darkModeText]}>
-              Send feedback
-            </Text>
-            <Icon name="chevron-right" size={18} color={MUTED} />
+            <Text style={styles.buttonText}>Send feedback</Text>
+            <Icon name="chevron-right" size={18} color={GRAY} />
           </TouchableOpacity>
 
           {showCommentBox && (
-            <View style={[styles.commentCard, darkModeEnabled && styles.darkModeCard]}>
+            <View style={styles.commentCard}>
               <TextInput
                 placeholder="Write what you think…"
                 value={userComment}
                 onChangeText={(text) => setUserComment(text)}
-                style={[styles.commentInput, darkModeEnabled && styles.darkModeInput]}
+                style={styles.commentInput}
                 multiline
                 numberOfLines={4}
               />
               <View style={styles.ratingCard}>
-                <Text style={[styles.ratingLabel, darkModeEnabled && styles.darkModeText]}>
-                  Rate TSe-Market (1-5)
-                </Text>
+                <Text style={styles.ratingLabel}>Rate TSe-Market (1-5)</Text>
                 <Slider
                   minimumValue={1}
                   maximumValue={5}
@@ -120,9 +104,9 @@ const Settings = ({ navigation }) => {
                   thumbStyle={styles.sliderThumb}
                   trackStyle={styles.sliderTrack}
                   minimumTrackTintColor={AMBER}
-                  maximumTrackTintColor='rgba(255,255,255,0.2)'
+                  maximumTrackTintColor='rgba(0,0,0,0.1)'
                 />
-                <Text style={[styles.ratingValue, darkModeEnabled && styles.darkModeText]}>
+                <Text style={styles.ratingValue}>
                   {selectedRating}
                 </Text>
               </View>
@@ -133,8 +117,8 @@ const Settings = ({ navigation }) => {
           )}
 
           <TouchableOpacity style={styles.buttonRow} onPress={goToSignIn} activeOpacity={0.85}>
-            <Icon name="logout" size={20} color="#FCA5A5" />
-            <Text style={[styles.buttonText, { color: '#FCA5A5' }]}>Log out</Text>
+            <Icon name="logout" size={20} color="#DC2626" />
+            <Text style={[styles.buttonText, { color: '#DC2626' }]}>Log out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -144,8 +128,8 @@ const Settings = ({ navigation }) => {
         onBackdropPress={() => setIsFeedbackMessageModalVisible(false)}
         style={styles.modalOverlay}
       >
-        <View style={[styles.feedbackModal, darkModeEnabled && styles.darkModeModal]}>
-          <Text style={[styles.feedbackModalText, darkModeEnabled && styles.darkModeText]}>
+        <View style={styles.feedbackModal}>
+          <Text style={styles.feedbackModalText}>
             {feedbackMessage}
           </Text>
           <TouchableOpacity style={[styles.button, styles.buttonFill]} onPress={() => setIsFeedbackMessageModalVisible(false)} activeOpacity={0.85}>
@@ -160,11 +144,8 @@ const Settings = ({ navigation }) => {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: '#1E1B4B',
+    backgroundColor: WHITE,
     padding: 20,
-  },
-  darkModePage: {
-    backgroundColor: '#0F172A',
   },
   scrollContent: {
     flexGrow: 1,
@@ -174,35 +155,16 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: '#4338CA',
+    backgroundColor: WHITE,
     borderRadius: 20,
     padding: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: GRAY,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 8,
-  },
-  darkModeCard: {
-    backgroundColor: '#1E293B',
-    borderColor: 'rgba(255,255,255,0.08)',
-  },
-  darkModePage: {
-    backgroundColor: '#0F172A',
-  },
-  darkModeText: {
-    color: CREAM,
-  },
-  darkModeMuted: {
-    color: MUTED,
-  },
-  darkModeInput: {
-    color: CREAM,
-  },
-  darkModeModal: {
-    backgroundColor: '#1E293B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   headerRow: {
     flexDirection: 'row',
@@ -213,31 +175,20 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 22,
     fontWeight: '800',
-    color: CREAM,
+    color: BLACK,
   },
   appVersion: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FBBF24',
-  },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  settingText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: CREAM,
+    color: AMBER,
   },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: GRAY,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -247,42 +198,42 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: CREAM,
+    color: BLACK,
   },
   policiesCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: GRAY,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
   },
   policiesText: {
     fontSize: 14,
-    color: '#CBD5E1',
+    color: '#333333',
     lineHeight: 20,
     marginBottom: 8,
   },
   policiesFooter: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#FBBF24',
+    color: AMBER,
     textAlign: 'right',
   },
   commentCard: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: CARD,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: GRAY,
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
   },
   commentInput: {
     fontSize: 15,
-    color: CREAM,
-    backgroundColor: '#3730A3',
+    color: BLACK,
+    backgroundColor: WHITE,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: GRAY,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 14,
@@ -296,14 +247,14 @@ const styles = StyleSheet.create({
   ratingLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: CREAM,
+    color: BLACK,
     marginBottom: 12,
   },
   sliderThumb: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: CREAM,
+    backgroundColor: WHITE,
     borderWidth: 2,
     borderColor: AMBER,
   },
@@ -314,7 +265,7 @@ const styles = StyleSheet.create({
   ratingValue: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#FBBF24',
+    color: AMBER,
     marginTop: 8,
     textAlign: 'center',
   },
@@ -327,28 +278,23 @@ const styles = StyleSheet.create({
   },
   buttonFill: {
     backgroundColor: AMBER,
-    shadowColor: '#B45309',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
   },
   feedbackModal: {
-    backgroundColor: '#4338CA',
+    backgroundColor: WHITE,
     borderRadius: 20,
     padding: 32,
     width: '80%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.2,
     shadowRadius: 24,
     elevation: 10,
   },
   feedbackModalText: {
     fontSize: 15,
     fontWeight: '600',
-    color: CREAM,
+    color: BLACK,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
@@ -356,6 +302,6 @@ const styles = StyleSheet.create({
   modalOverlay: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
 });

@@ -12,8 +12,7 @@ import Settings from './Settings';
 import AddList from './AddList';
 
 const AMBER = '#F59E0B';
-const CREAM = '#F8FAFC';
-const MUTED = '#94A3B8';
+const MUTED = '#666666';
 
 const Stack = createStackNavigator();
 
@@ -107,9 +106,9 @@ export default function Home() {
         options={{
           headerTitle: 'Add an item listing',
           headerTitleAlign: 'center',
-          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
-          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
-          headerTintColor: CREAM,
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: '#111111' },
+          headerStyle: { backgroundColor: '#F59E0B', borderBottomWidth: 0 },
+          headerTintColor: '#111111',
         }}
       />
       <Stack.Screen
@@ -118,9 +117,9 @@ export default function Home() {
         options={{
           headerTitle: 'Search for items',
           headerTitleAlign: 'center',
-          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
-          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
-          headerTintColor: CREAM,
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: '#111111' },
+          headerStyle: { backgroundColor: '#F59E0B', borderBottomWidth: 0 },
+          headerTintColor: '#111111',
         }}
       />
       <Stack.Screen
@@ -129,9 +128,9 @@ export default function Home() {
         options={{
           headerTitle: 'User profile',
           headerTitleAlign: 'center',
-          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
-          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
-          headerTintColor: CREAM,
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: '#111111' },
+          headerStyle: { backgroundColor: '#F59E0B', borderBottomWidth: 0 },
+          headerTintColor: '#111111',
         }}
       />
       <Stack.Screen
@@ -140,9 +139,9 @@ export default function Home() {
         options={{
           headerTitle: 'My bag',
           headerTitleAlign: 'center',
-          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
-          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
-          headerTintColor: CREAM,
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: '#111111' },
+          headerStyle: { backgroundColor: '#F59E0B', borderBottomWidth: 0 },
+          headerTintColor: '#111111',
         }}
       />
       <Stack.Screen
@@ -151,9 +150,9 @@ export default function Home() {
         options={{
           headerTitle: 'Settings',
           headerTitleAlign: 'center',
-          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: CREAM },
-          headerStyle: { backgroundColor: '#4338CA', borderBottomWidth: 0 },
-          headerTintColor: CREAM,
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: '#111111' },
+          headerStyle: { backgroundColor: '#F59E0B', borderBottomWidth: 0 },
+          headerTintColor: '#111111',
         }}
       />
     </Stack.Navigator>
@@ -208,7 +207,7 @@ const styles = StyleSheet.create({
   iconLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: CREAM,
+    color: '#111111',
   },
   logoutButton: {
     flexDirection: 'row',
