@@ -1,7 +1,7 @@
 import { StyleSheet, View, TouchableOpacity, Text, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import Input from "./components/Input";
 import Home from "./components/Home";
 import CreateAcc from "./components/CreateAcc";
@@ -18,46 +18,48 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{
-        headerStyle: { backgroundColor: theme.colors.primary, borderBottomWidth: 0 },
-        headerTintColor: theme.colors.onPrimary,
-        headerTitleStyle: { fontSize: 18, fontWeight: '700', color: theme.colors.onPrimary },
-        headerTitleAlign: 'center',
-      }}>
-        <Stack.Screen
-          name="Welcome to TSe-Market!"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Homepage" component={Home} />
-        <Stack.Screen
-          name="Create Account"
-          component={CreateAcc}
-          options={{ title: 'Create new account' }}
-        />
-        <Stack.Screen
-          name="Forgot Password"
-          component={ForgotPw}
-          options={{ title: 'Forgot password?' }}
-        />
-        <Stack.Screen
-          name="Code Verification"
-          component={CodeVerif}
-          options={{ title: 'Verify your code' }}
-        />
-        <Stack.Screen
-          name="Reset Password"
-          component={ResetPw}
-          options={{ title: 'Reset your password' }}
-        />
-        <Stack.Screen
-          name="Account Sign-In"
-          component={SignIn}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{
+          headerStyle: { backgroundColor: theme.colors.primary, borderBottomWidth: 0 },
+          headerTintColor: theme.colors.onPrimary,
+          headerTitleStyle: { fontSize: 18, fontWeight: '700', color: theme.colors.onPrimary },
+          headerTitleAlign: 'center',
+        }}>
+          <Stack.Screen
+            name="Welcome to TSe-Market!"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Homepage" component={Home} />
+          <Stack.Screen
+            name="Create Account"
+            component={CreateAcc}
+            options={{ title: 'Create new account' }}
+          />
+          <Stack.Screen
+            name="Forgot Password"
+            component={ForgotPw}
+            options={{ title: 'Forgot password?' }}
+          />
+          <Stack.Screen
+            name="Code Verification"
+            component={CodeVerif}
+            options={{ title: 'Verify your code' }}
+          />
+          <Stack.Screen
+            name="Reset Password"
+            component={ResetPw}
+            options={{ title: 'Reset your password' }}
+          />
+          <Stack.Screen
+            name="Account Sign-In"
+            component={SignIn}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
