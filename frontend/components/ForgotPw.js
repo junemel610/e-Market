@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import Constants from 'expo-constants';
 
@@ -7,21 +7,32 @@ const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 
 export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSendCode = async () => {
     try {
-      const response = await axios.post(`${backendUrl}/send-code`, { email });
+      if (loading) return;
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail) {
+        setErrorMessage('Enter the email address associated with your account.');
+        return;
+      }
+      setErrorMessage('');
+      setLoading(true);
+      const response = await axios.post(`${backendUrl}/send-code`, { email: normalizedEmail });
   
       if (response.data.success) {
         console.log('Verification code sent successfully');
-        navigation.navigate('Code Verification', { email });
+        navigation.navigate('Code Verification', { email: normalizedEmail });
       } else {
-        console.error('Error sending verification code:', response.data.message);
-        Alert.alert('Error', 'Failed to send verification code.');
+        setErrorMessage(response.data.message || 'Failed to send verification code.');
       }
     } catch (error) {
       console.error('Error sending verification code:', error);
-      Alert.alert('Error', 'Failed to send verification code.');
+      setErrorMessage(error.response?.data?.message || 'Could not send the code. Check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -34,15 +45,21 @@ export default function ForgotPassword({ navigation }) {
         <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
-          onChangeText={(text) => setEmail(text)}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          accessibilityLabel="Account email"
+          onChangeText={(text) => { setEmail(text); setErrorMessage(''); }}
         />
       </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleSendCode}
+        disabled={loading}
       >
-        <Text style={styles.createButtonText}>Next</Text>
+        <Text style={styles.createButtonText}>{loading ? 'Sending…' : 'Next'}</Text>
       </TouchableOpacity>
+      {!!errorMessage && <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text>}
     </View>
   );
 }
@@ -78,6 +95,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
+    minHeight: 44,
     padding: 10,
     borderColor: '#EFD02C',
     borderWidth: 1,
@@ -88,6 +106,7 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#EFD02C',
     paddingVertical: 10,
+    minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 30,
@@ -97,4 +116,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#545F71',
   },
+  error: { color: '#FFD2D2', marginTop: 12, textAlign: 'center' },
 });

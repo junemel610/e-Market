@@ -9,9 +9,20 @@ export default function ResetPassword({ navigation, route }) {
   const { email } = route.params;
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const resetPassword = async () => {
+    if (loading) return;
+    if (newPassword.length < 8) {
+      Alert.alert('Password too short', 'Use at least 8 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Passwords do not match', 'Enter the same password in both fields.');
+      return;
+    }
     try {
+      setLoading(true);
       const response = await axios.patch(`${backendUrl}/reset-password`, {
         email,
         password: newPassword,
@@ -33,6 +44,8 @@ export default function ResetPassword({ navigation, route }) {
     } catch (error) {
       console.error('Error resetting password:', error);
       Alert.alert('Error', 'Failed to reset password. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +58,8 @@ export default function ResetPassword({ navigation, route }) {
         <TextInput
           style={styles.input}
           secureTextEntry
+          textContentType="newPassword"
+          accessibilityLabel="New password"
           onChangeText={(text) => setNewPassword(text)}
         />
       </View>
@@ -53,14 +68,17 @@ export default function ResetPassword({ navigation, route }) {
         <TextInput
           style={styles.input}
           secureTextEntry
+          textContentType="newPassword"
+          accessibilityLabel="Confirm new password"
           onChangeText={(text) => setConfirmPassword(text)}
         />
       </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={resetPassword}
+        disabled={loading}
       >
-        <Text style={styles.createButtonText}>Reset Password</Text>
+        <Text style={styles.createButtonText}>{loading ? 'Resetting…' : 'Reset Password'}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -97,6 +115,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
+    minHeight: 44,
     padding: 10,
     borderColor: '#EFD02C',
     borderWidth: 1,
@@ -107,6 +126,7 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#EFD02C',
     paddingVertical: 10,
+    minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 30,

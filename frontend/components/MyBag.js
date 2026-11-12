@@ -61,6 +61,7 @@ function App() {
         data={cartItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={<Text style={styles.emptyState}>Your bag is empty.</Text>}
       />
     </View>
   );
@@ -90,6 +91,12 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  emptyState: {
+    marginTop: 24,
+    textAlign: 'center',
+    color: '#545F71',
+    fontSize: 16,
   },
 });
 

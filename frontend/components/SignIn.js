@@ -9,30 +9,28 @@ const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 export default function SignIn({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSignInAccount = async () => {
     try {
-      if (!username || !password) {
-        alert('Username and password are required');
-        console.error('Username and password are required');
+      if (loading) return;
+      if (!username.trim() || !password) {
+        Alert.alert('Sign in required', 'Enter your username or email and password.');
         return;
       }
-  
+      setLoading(true);
       const response = await axios.post(`${backendUrl}/sign-in`, {
-        username: username,  // Assuming the server expects 'username' instead of 'identifier'
+        username: username.trim(),
         password: password,
       });
   
       console.log('Login Response:', response.data);
   
       if (response.data && response.data.success) {
-        navigation.navigate('Homepage');
-        console.log('Login successful');
-        // Store the token in AsyncStorage
         const token = response.data.token;
+        if (!token) throw new Error('The server did not return a session token.');
         await AsyncStorage.setItem('token', token);
-        console.log('Token saved to AsyncStorage:', token);
-        navigation.navigate('Homepage')
+        navigation.navigate('Homepage');
         
       } else {
         console.error('Error during login:', response.data.message);
@@ -43,6 +41,8 @@ export default function SignIn({ navigation }) {
       console.error('Error during login:', error);
   
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -63,6 +63,9 @@ export default function SignIn({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Enter your username"
+          autoCapitalize="none"
+          textContentType="username"
+          accessibilityLabel="Username or email"
           onChangeText={(text) => setUsername(text)}
         />
       </View>
@@ -72,14 +75,17 @@ export default function SignIn({ navigation }) {
           style={styles.input}
           placeholder="Enter your password"
           secureTextEntry
+          textContentType="password"
+          accessibilityLabel="Password"
           onChangeText={(text) => setPassword(text)}
         />
       </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleSignInAccount}
+        disabled={loading}
       >
-        <Text style={styles.createButtonText}>Sign In</Text>
+        <Text style={styles.createButtonText}>{loading ? 'Signing in…' : 'Sign In'}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.newAccountButton}
@@ -136,6 +142,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
+    minHeight: 44,
     padding: 10,
     borderColor: '#EFD02C',
     borderWidth: 1,
@@ -146,6 +153,7 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#EFD02C',
     paddingVertical: 10,
+    minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 30,

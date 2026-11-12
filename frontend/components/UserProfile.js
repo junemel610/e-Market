@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { Input } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -32,10 +32,15 @@ const UserProfile = () => {
   });
 
   const [editing, setEditing] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [profileError, setProfileError] = useState('');
+  const [profileRetry, setProfileRetry] = useState(0);
 
   const handleSaveProfile = async () => {
-    setEditing(false);
+    if (savingProfile) return;
     try {
+      setSavingProfile(true);
       const storedToken = await AsyncStorage.getItem('token');
 
       if (storedToken) {
@@ -45,14 +50,21 @@ const UserProfile = () => {
           },
         });
 
-        alert('Profile is successfully updated ');
-        console.log('Update Profile Response:', response.data);
+        if (!response.data?.success) {
+          Alert.alert('Profile not updated', response.data?.message || 'Please try again.');
+          return;
+        }
+        setUser(response.data.user || user);
+        setEditing(false);
+        Alert.alert('Profile updated', 'Your profile changes have been saved.');
       } else {
-        console.error('No token found. Unable to update profile.');
+        Alert.alert('Sign in required', 'Your session is missing. Please sign in again.');
       }
     } catch (error) {
-      alert('Error updating profile: ' + error);
+      Alert.alert('Profile not updated', error.response?.data?.message || 'Please try again.');
       console.error('Error updating profile:', error);
+    } finally {
+      setSavingProfile(false);
     }
   };
 
@@ -87,37 +99,64 @@ const UserProfile = () => {
   );
 
   useEffect(() => {
+    if (!isFocused) return undefined;
+    let isCurrent = true;
     const fetchUserData = async () => {
+      setLoadingProfile(true);
+      setProfileError('');
       try {
         const token = await AsyncStorage.getItem('token');
 
-        if (token) {
-          const response = await axios.get(`${backendUrl}/user-data`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+        if (!token) {
+          if (isCurrent) setProfileError('Your session is missing. Please sign in again.');
+          return;
+        }
 
-          if (response.data.success) {
-            const userProfile = response.data.user;
-            setUser({
-              ...userProfile,
-              profileImage: userProfile.profileImage || defaultProfileImage,
-            });
-          } else {
-            console.error('Error fetching user data:', response.data.message);
-          }
+        const response = await axios.get(`${backendUrl}/user-data`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.data.success) {
+          throw new Error(response.data.message || 'Could not load your profile.');
+        }
+        if (isCurrent) {
+          const userProfile = response.data.user;
+          setUser({
+            ...userProfile,
+            profileImage: userProfile.profileImage || defaultProfileImage,
+          });
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
+        if (isCurrent) setProfileError(error.response?.data?.message || error.message || 'Could not load your profile.');
+      } finally {
+        if (isCurrent) setLoadingProfile(false);
       }
     };
 
-    if (isFocused) {
-      // Fetch user data only when the screen is focused
-      fetchUserData();
-    }
-  }, [isFocused]);
+    fetchUserData();
+    return () => { isCurrent = false; };
+  }, [isFocused, profileRetry]);
+
+  if (loadingProfile && !user) {
+    return (
+      <View style={styles.stateContainer}>
+        <ActivityIndicator color="#545F71" />
+        <Text style={styles.stateMessage}>Loading your profile…</Text>
+      </View>
+    );
+  }
+
+  if (profileError && !user) {
+    return (
+      <View style={styles.stateContainer}>
+        <Text accessibilityRole="alert" style={styles.stateMessage}>{profileError}</Text>
+        <TouchableOpacity style={styles.editUpdateButton} onPress={() => setProfileRetry((retry) => retry + 1)}>
+          <Text style={styles.editUpdateButtonText}>Try again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -177,8 +216,8 @@ const UserProfile = () => {
             </Picker>
           </View>
 
-          <TouchableOpacity style={styles.editUpdateButton} onPress={handleSaveProfile}>
-            <Text style={styles.editUpdateButtonText}>Update Profile</Text>
+          <TouchableOpacity style={styles.editUpdateButton} onPress={handleSaveProfile} disabled={savingProfile}>
+            <Text style={styles.editUpdateButtonText}>{savingProfile ? 'Saving…' : 'Update Profile'}</Text>
           </TouchableOpacity>
         </>
       ) : (
@@ -210,6 +249,17 @@ const UserProfile = () => {
 };
 
 const styles = StyleSheet.create({
+  stateContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  stateMessage: {
+    marginTop: 12,
+    textAlign: 'center',
+    fontSize: 16,
+  },
   container: {
     alignItems: 'center',
     justifyContent: 'flex-start',

@@ -13,13 +13,13 @@ import { FlatList } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from 'react-native-modal';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default class App extends Component {
   constructor() {
     super();
     this.state = {
-      query: null,
+      query: '',
       dataSource: [],
       dataBackup: [],
       isModalVisible: false,
@@ -43,24 +43,12 @@ export default class App extends Component {
     });
   }
 
-  filterItem = event => {
-    var query = event.nativeEvent.text;
-    this.setState({
-      query: query,
-    });
-    if (query == '') {
-      this.setState({
-        dataSource: this.state.dataBackup,
-      });
-    } else {
-      var data = this.state.dataBackup;
-      query = query.toLowerCase();
-      data = data.filter(l => l.name.toLowerCase().match(query));
-
-      this.setState({
-        dataSource: data,
-      });
-    }
+  filterItem = query => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const dataSource = normalizedQuery
+      ? this.state.dataBackup.filter(item => item.name.toLowerCase().includes(normalizedQuery))
+      : this.state.dataBackup;
+    this.setState({ query, dataSource });
   };
 
   toggleModal = () => {
@@ -74,7 +62,6 @@ export default class App extends Component {
   };
 
   render() {
-    console.disableYellowBox = true;
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#ff5b77" />
@@ -83,13 +70,20 @@ export default class App extends Component {
             placeholder="Search Items Here"
             placeholderTextColor="gray"
             value={this.state.query}
-            onChange={this.filterItem.bind(this)}
+            accessibilityLabel="Search items"
+            returnKeyType="search"
+            onChangeText={this.filterItem}
             style={styles.input}
           />
         </View>
         <FlatList
           data={this.state.dataSource}
           ItemSeparatorComponent={() => this.separator()}
+          ListEmptyComponent={(
+            <Text style={styles.emptyState}>
+              {this.state.query ? 'No items match your search.' : 'No items are available yet.'}
+            </Text>
+          )}
           renderItem={({ item, index }) => {
             return (
               <View style={styles.bookContainer}>
@@ -105,6 +99,8 @@ export default class App extends Component {
                   <TouchableOpacity
                     style={styles.iconNav}
                     onPress={this.toggleModal}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Check if ${item.name} can be added to My Bag`}
                   >
                     <Icon name="plus" style={{ fontSize: 15, color: 'black' }} />
                   </TouchableOpacity>
@@ -116,7 +112,7 @@ export default class App extends Component {
         <Modal isVisible={this.state.isModalVisible}>
           <View style={styles.modalContent}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>Item has been added to My Bag</Text>
+              <Text style={styles.modalText}>Adding items to My Bag is not connected yet.</Text>
               <TouchableOpacity onPress={this.toggleModal}>
                 <Text style={styles.modalText2}>Great!</Text>
               </TouchableOpacity>
@@ -147,6 +143,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 5,
     paddingLeft: 10,
+  },
+  emptyState: {
+    padding: 24,
+    textAlign: 'center',
+    color: '#545F71',
+    fontSize: 16,
   },
   bookContainer: {
     flexDirection: 'row',
@@ -179,8 +181,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 5,
     right: 5,
-    width: 30,
-    height: 30,
+    width: 44,
+    height: 44,
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',

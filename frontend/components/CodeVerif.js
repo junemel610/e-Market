@@ -12,6 +12,12 @@ export default function CodeVerification({ navigation, route }) {
   const [error, setError] = useState('');
 
   const handleVerifyCode = async () => {
+    if (loading) return;
+    if (!/^\d{6}$/.test(enteredCode.trim())) {
+      setError('Enter the six-digit verification code.');
+      return;
+    }
+    setError('');
     try {
       setLoading(true);
   
@@ -42,15 +48,21 @@ export default function CodeVerification({ navigation, route }) {
         <Text style={styles.label}>Verification Code</Text>
         <TextInput
           style={styles.input}
-          onChangeText={(text) => setEnteredCode(text)}
+          value={enteredCode}
+          keyboardType="number-pad"
+          maxLength={6}
+          accessibilityLabel="Six-digit verification code"
+          onChangeText={(text) => { setEnteredCode(text.replace(/\D/g, '')); setError(''); }}
         />
       </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleVerifyCode}
+        disabled={loading}
       >
-        <Text style={styles.createButtonText}>Verify</Text>
+        <Text style={styles.createButtonText}>{loading ? 'Verifying…' : 'Verify'}</Text>
       </TouchableOpacity>
+      {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
     </View>
   );
 }
@@ -86,6 +98,7 @@ const styles = StyleSheet.create({
     input: {
       width: '100%',
       height: 40,
+      minHeight: 44,
       padding: 10,
       borderColor: '#EFD02C',
       borderWidth: 1,
@@ -96,6 +109,7 @@ const styles = StyleSheet.create({
     createButton: {
       backgroundColor: '#EFD02C',
       paddingVertical: 10,
+      minHeight: 44,
       paddingHorizontal: 20,
       borderRadius: 5,
       marginTop: 30,
@@ -105,5 +119,6 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: '#545F71',
     },
+    error: { color: '#FFD2D2', marginTop: 12, textAlign: 'center' },
   });
   
