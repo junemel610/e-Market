@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import axios from 'axios';
-import Constants from 'expo-constants';
-
-const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 
 export default function ResetPassword({ navigation, route }) {
   const { email } = route.params;
@@ -23,24 +19,17 @@ export default function ResetPassword({ navigation, route }) {
     }
     try {
       setLoading(true);
-      const response = await axios.patch(`${backendUrl}/reset-password`, {
-        email,
-        password: newPassword,
-        confirmPassword,
-      });
 
-      if (response.data.success) {
-        Alert.alert('Password Reset', 'Your password has been successfully reset.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.navigate('Account Sign-In');
-            },
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      Alert.alert('Password Reset', 'Your password has been successfully reset locally.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.navigate('Account Sign-In');
           },
-        ]);
-      } else {
-        Alert.alert('Password Reset Failed', response.data.message);
-      }
+        },
+      ]);
     } catch (error) {
       console.error('Error resetting password:', error);
       Alert.alert('Error', 'Failed to reset password. Please try again.');

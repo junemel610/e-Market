@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Logo from "./components/Logo";
 import Welcome from "./components/Welcome";
-import Input from "./components/Input";
 import Home from "./components/Home";
 import CreateAcc from "./components/CreateAcc";
 import SignIn from "./components/SignIn";
@@ -147,7 +146,12 @@ function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <Welcome />
       <Logo />
-      <Input onSignInPress={() => navigation.navigate('Homepage')} />
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => navigation.navigate('Homepage')}
+      >
+        <Text style={styles.loginText}>Sign In</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.newAccountButton}
