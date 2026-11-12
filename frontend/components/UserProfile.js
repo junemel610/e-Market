@@ -2,66 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { Input } from 'react-native-elements';
 import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
-import { useNavigation, useIsFocused } from '@react-navigation/native';  
 
-const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
+const defaultProfileImage = require('../assets/profilePic.jpg');
 
 const UserProfile = () => {
-  
-  const isFocused = useIsFocused();
-  const defaultProfileImage = require('../assets/profilePic.jpg');
-
-  const [user, setUser] = useState(null);
-
-  const [savedItems, setSavedItems] = useState({
-    Electronics: [
-
-    ],
-    Clothing: [
-
-    ],
-    School: [
-      { id: 1, name: 'T - Square' },
-    ],
-    Uniform: [
-      
-    ],
-  });
-
   const [editing, setEditing] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [profileError, setProfileError] = useState('');
-  const [profileRetry, setProfileRetry] = useState(0);
+
+  const [user, setUser] = useState({
+    username: 'juan23',
+    fullname: 'Juan Dela Cruz',
+    contactNumber: '+639123456789',
+    email: 'juan@tip.edu.ph',
+    program: 'Computer Science',
+    yearLevel: '3rd Year',
+    profileImage: defaultProfileImage,
+  });
+
+  const [savedItems, setSavedItems] = useState({
+    Electronics: [],
+    Clothing: [],
+    School: [
+      { id: 1, name: 'T - Square' },
+    ],
+    Uniform: [],
+  });
 
   const handleSaveProfile = async () => {
     if (savingProfile) return;
     try {
       setSavingProfile(true);
-      const storedToken = await AsyncStorage.getItem('token');
 
-      if (storedToken) {
-        const response = await axios.patch(`${backendUrl}/update-user`, user, {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        });
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
-        if (!response.data?.success) {
-          Alert.alert('Profile not updated', response.data?.message || 'Please try again.');
-          return;
-        }
-        setUser(response.data.user || user);
-        setEditing(false);
-        Alert.alert('Profile updated', 'Your profile changes have been saved.');
-      } else {
-        Alert.alert('Sign in required', 'Your session is missing. Please sign in again.');
-      }
+      setEditing(false);
+      Alert.alert('Profile updated', 'Your profile changes have been saved locally.');
     } catch (error) {
-      Alert.alert('Profile not updated', error.response?.data?.message || 'Please try again.');
+      Alert.alert('Profile not updated', 'Please try again.');
       console.error('Error updating profile:', error);
     } finally {
       setSavingProfile(false);
@@ -99,46 +77,10 @@ const UserProfile = () => {
   );
 
   useEffect(() => {
-    if (!isFocused) return undefined;
-    let isCurrent = true;
-    const fetchUserData = async () => {
-      setLoadingProfile(true);
-      setProfileError('');
-      try {
-        const token = await AsyncStorage.getItem('token');
+    setLoadingProfile(false);
+  }, []);
 
-        if (!token) {
-          if (isCurrent) setProfileError('Your session is missing. Please sign in again.');
-          return;
-        }
-
-        const response = await axios.get(`${backendUrl}/user-data`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!response.data.success) {
-          throw new Error(response.data.message || 'Could not load your profile.');
-        }
-        if (isCurrent) {
-          const userProfile = response.data.user;
-          setUser({
-            ...userProfile,
-            profileImage: userProfile.profileImage || defaultProfileImage,
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        if (isCurrent) setProfileError(error.response?.data?.message || error.message || 'Could not load your profile.');
-      } finally {
-        if (isCurrent) setLoadingProfile(false);
-      }
-    };
-
-    fetchUserData();
-    return () => { isCurrent = false; };
-  }, [isFocused, profileRetry]);
-
-  if (loadingProfile && !user) {
+  if (loadingProfile) {
     return (
       <View style={styles.stateContainer}>
         <ActivityIndicator color="#545F71" />
@@ -147,54 +89,41 @@ const UserProfile = () => {
     );
   }
 
-  if (profileError && !user) {
-    return (
-      <View style={styles.stateContainer}>
-        <Text accessibilityRole="alert" style={styles.stateMessage}>{profileError}</Text>
-        <TouchableOpacity style={styles.editUpdateButton} onPress={() => setProfileRetry((retry) => retry + 1)}>
-          <Text style={styles.editUpdateButtonText}>Try again</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <Image source={user?.profileImage || defaultProfileImage} style={styles.profileImage} />
+      <Image source={user.profileImage || defaultProfileImage} style={styles.profileImage} />
 
       {editing ? (
         <>
           <Input
             label="Username"
             placeholder="i.e. Juan23"
-            value={user?.username}
+            value={user.username}
             onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, username: text }))}
           />
           <Input
             label="Full Name"
             placeholder="i.e. Juan dela Cruz"
-            value={user?.fullname}
+            value={user.fullname}
             onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, fullname: text }))}
           />
           <Input
             label="Contact Number"
             placeholder="+639........."
-            value={user?.contactNumber.toString()}
+            value={user.contactNumber.toString()}
             onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, contactNumber: text }))}
           />
-
           <Input
             label="School Email"
             placeholder="username@tip.edu.ph"
-            value={user?.email}
+            value={user.email}
             onChangeText={(text) => setUser((prevUser) => ({ ...prevUser, email: text }))}
           />
-
           <View style={styles.pickerContainer}>
             <Text style={styles.pickerLabel}>Select Program:</Text>
             <Picker
               style={styles.picker}
-              selectedValue={user?.program}
+              selectedValue={user.program}
               onValueChange={(itemValue) => setUser((prevUser) => ({ ...prevUser, program: itemValue }))}
             >
               {programs.map((program, index) => (
@@ -202,12 +131,11 @@ const UserProfile = () => {
               ))}
             </Picker>
           </View>
-
           <View style={styles.pickerContainer}>
             <Text style={styles.pickerLabel}>Select Year Level:</Text>
             <Picker
               style={styles.picker}
-              selectedValue={user?.yearLevel}
+              selectedValue={user.yearLevel}
               onValueChange={(itemValue) => setUser((prevUser) => ({ ...prevUser, yearLevel: itemValue }))}
             >
               {yearLevels.map((year, index) => (
@@ -215,21 +143,19 @@ const UserProfile = () => {
               ))}
             </Picker>
           </View>
-
           <TouchableOpacity style={styles.editUpdateButton} onPress={handleSaveProfile} disabled={savingProfile}>
             <Text style={styles.editUpdateButtonText}>{savingProfile ? 'Saving…' : 'Update Profile'}</Text>
           </TouchableOpacity>
         </>
       ) : (
         <>
-          <Text style={styles.userName}>{user?.username}</Text>
-          <Text style={styles.fullName}>{user?.fullname}</Text>
-          <Text style={styles.contactNumber}>{user?.contactNumber}</Text>
-          <Text style={styles.email}>{user?.email}</Text>
+          <Text style={styles.userName}>{user.username}</Text>
+          <Text style={styles.fullName}>{user.fullname}</Text>
+          <Text style={styles.contactNumber}>{user.contactNumber}</Text>
+          <Text style={styles.email}>{user.email}</Text>
           <Text style={styles.programYear}>
-            {user?.program}, {user?.yearLevel}
+            {user.program}, {user.yearLevel}
           </Text>
-
           <TouchableOpacity style={styles.editUpdateButton} onPress={() => setEditing(true)}>
             <Text style={styles.editUpdateButtonText}>Edit Profile</Text>
           </TouchableOpacity>
@@ -300,7 +226,7 @@ const styles = StyleSheet.create({
   },
   pickerLabel: {
     marginRight: 10,
-    fontSize: 18, 
+    fontSize: 18,
     paddingLeft: 20,
   },
   picker: {
