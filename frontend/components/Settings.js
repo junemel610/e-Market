@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, Switch, StyleSheet, TextInput, ScrollView
 import { Slider } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from 'react-native-modal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Settings = ({ navigation }) => {
@@ -44,13 +43,8 @@ const Settings = ({ navigation }) => {
         {
           text: 'Confirm',
           onPress: async () => {
-            // Clear the authentication token
-            await AsyncStorage.removeItem('token');
-  
-            // Verify if the token is removed
-            const tokenAfterLogout = await AsyncStorage.getItem('token');
-            console.log('Token after logout:', tokenAfterLogout);
-  
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
             Alert.alert('Successfully logged out of your account!');
   
             // Replace the current screen with the Sign-In screen

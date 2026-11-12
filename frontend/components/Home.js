@@ -10,7 +10,6 @@ import UserProfile from '../components/UserProfile';
 import MyBag from '../components/MyBag';
 import Settings from './Settings';
 import AddList from './AddList';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -41,9 +40,7 @@ function HomeScreen({ navigation }) {
           text: 'Confirm',
           onPress: async () => {
             
-            await AsyncStorage.removeItem('token');
-            const tokenAfterLogout = await AsyncStorage.getItem('token');
-            console.log('Token after logout:', tokenAfterLogout);
+            await new Promise((resolve) => setTimeout(resolve, 300));
 
             Alert.alert('Successfully logged out of your account!');
             navigation.navigate('Account Sign-In');
