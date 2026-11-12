@@ -203,3 +203,5 @@ const styles = StyleSheet.create({
   modalVisible: { transform: [{ scale: 1 }], opacity: 1 },
   feedbackModalText: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.semibold, color: BLACK, textAlign: 'center', marginBottom: theme.spacing.md, lineHeight: 22 },
 });
+
+export default Settings;

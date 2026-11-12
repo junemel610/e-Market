@@ -138,7 +138,7 @@ const MyBag = () => {
               </Pressable>
             </View>
           </>
-        }
+        )}
       </View>
     </SafeAreaView>
   );
