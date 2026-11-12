@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View} from 'react-native'
 import React from 'react'
+import theme from '../src/theme'
 
 export default function Welcome() {
   return (
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       margin: 7,
       fontWeight: 'bold',
-      color: '#EFD02C',
+      color: theme.colors.primary,
       paddingTop: 50,
     },
 });
