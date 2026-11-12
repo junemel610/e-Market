@@ -1,46 +1,41 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 const backendUrl = Constants.expoConfig.extra.REACT_APP_BACKEND_URL;
 
-export default function Input({ onSignInPress, navigation }) {
+export default function Input({ onSignInPress }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSignInPress = async () => {
-    if (!username || !password) {
-      console.error('Username and password are required');
+    if (loading) return;
+    if (!username.trim() || !password) {
+      setErrorMessage('Enter your username or email and password.');
       return;
     }
-  
+    setErrorMessage('');
+    setLoading(true);
     try {
-      const isEmail = username.includes('@');
-      const payload = isEmail ? { email: username } : { username };
-      payload.password = password;
-
-      const response = await axios.post(`${backendUrl}/sign-in`, payload);
-      console.log('Login Response:', response.data);
+      // The API accepts either a username or an email in its `username` field.
+      const response = await axios.post(`${backendUrl}/sign-in`, { username: username.trim(), password });
   
       if (response.data && response.data.success) {
-        console.log('Login successful');
-        
-        // Store the token in AsyncStorage
         const token = response.data.token;
+        if (!token) throw new Error('The server did not return a session token.');
         await AsyncStorage.setItem('token', token);
-        console.log('Token saved to AsyncStorage:', token);
-
-        onSignInPress({ identifier: username, password }, navigation);
+        onSignInPress();
       } else {
-        alert('Error during login: ' + response.data.message);
-        console.error('Error during login:', response.data.message);
+        setErrorMessage(response.data.message || 'Unable to sign in. Check your credentials.');
       }
     } catch (error) {
-      // Handle other errors (network issues, server errors, etc.)
-      alert('Error during login: ' + error.message);
-      console.error('Error during login:', error);
+      setErrorMessage(error.response?.data?.message || error.message || 'Unable to sign in. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,7 +46,11 @@ export default function Input({ onSignInPress, navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Username"
-          onChangeText={(text) => setUsername(text)}
+          value={username}
+          autoCapitalize="none"
+          textContentType="username"
+          accessibilityLabel="Username or email"
+          onChangeText={(text) => { setUsername(text); setErrorMessage(''); }}
         />
       </View>
       <View style={styles.container}>
@@ -60,15 +59,20 @@ export default function Input({ onSignInPress, navigation }) {
           style={styles.input}
           placeholder="Password"
           secureTextEntry
-          onChangeText={(text) => setPassword(text)}
+          value={password}
+          textContentType="password"
+          accessibilityLabel="Password"
+          onChangeText={(text) => { setPassword(text); setErrorMessage(''); }}
         />
       </View>
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleSignInPress}
+        disabled={loading}
       >
-        <Text style={styles.createButtonText}>Log In</Text>
+        <Text style={styles.createButtonText}>{loading ? 'Signing in…' : 'Log In'}</Text>
       </TouchableOpacity>
+      {!!errorMessage && <Text accessibilityRole="alert" style={styles.error}>{errorMessage}</Text>}
     </KeyboardAvoidingView>
   );
 }
@@ -82,6 +86,7 @@ const styles = StyleSheet.create({
   },
   input: {
     padding: 10,
+    minHeight: 44,
     borderColor: '#EFD02C',
     borderWidth: 1,
     fontSize: 18,
@@ -101,6 +106,7 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#EFD02C',
     paddingVertical: 10,
+    minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 30,
@@ -110,4 +116,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#545F71',
   },
+  error: { color: '#FFD2D2', marginTop: 12, textAlign: 'center' },
 });

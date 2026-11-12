@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -81,20 +81,25 @@ function HomeScreen({ navigation }) {
         <Text style={styles.text1}>Searching for second-hand items will be a click away!</Text>
       </View>
       <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={goToSearch} style={styles.icon}>
-          <Icon2 name="shopping-search" size={30} color="#EFD02C" />
+        <TouchableOpacity onPress={goToSearch} style={styles.icon} accessibilityRole="button">
+          <Icon2 name="shopping-search" size={24} color="#EFD02C" />
+          <Text style={styles.iconLabel}>Search</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToUserProfile} style={styles.icon}>
-          <Icon2 name="account-edit-outline" size={30} color="#EFD02C" />
+        <TouchableOpacity onPress={goToUserProfile} style={styles.icon} accessibilityRole="button">
+          <Icon2 name="account-edit-outline" size={24} color="#EFD02C" />
+          <Text style={styles.iconLabel}>Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToAddList} style={styles.icon}>
-          <Icon3 name="pluscircleo" size={30} color="#EFD02C" />
+        <TouchableOpacity onPress={goToAddList} style={styles.icon} accessibilityRole="button">
+          <Icon3 name="pluscircleo" size={24} color="#EFD02C" />
+          <Text style={styles.iconLabel}>Add item</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToMyBag} style={styles.icon}>
-          <Icon2 name="bag-personal-outline" size={30} color="#EFD02C" />
+        <TouchableOpacity onPress={goToMyBag} style={styles.icon} accessibilityRole="button">
+          <Icon2 name="bag-personal-outline" size={24} color="#EFD02C" />
+          <Text style={styles.iconLabel}>My Bag</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToSettings} style={styles.icon}>
-          <Icon name="settings-outline" size={30} color="#EFD02C" />
+        <TouchableOpacity onPress={goToSettings} style={styles.icon} accessibilityRole="button">
+          <Icon name="settings-outline" size={24} color="#EFD02C" />
+          <Text style={styles.iconLabel}>Settings</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -229,13 +234,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     width: '100%',
+    paddingHorizontal: 4,
   },
   icon: {
     marginBottom: 10,
     backgroundColor: 'white',
-    padding: 10,
+    paddingVertical: 8,
     borderRadius: 15,
-    width: 80, 
+    width: '19%',
+    minHeight: 64,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconLabel: {
+    color: '#545F71',
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 3,
   },
 });

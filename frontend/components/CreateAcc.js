@@ -25,44 +25,42 @@ const CreateAcc = ({ navigation }) => {
   const [contactNumber, setContactNumber] = useState('');
   const [selectedProgram, setSelectedProgram] = useState('');
   const [selectedYearLevel, setSelectedYearLevel] = useState('');
+  const [loading, setLoading] = useState(false);
   
 
   const handleCreateAccount = async () => {
     try {
         // Validate required fields
-        if (!email || !username || !password || !fullname || !contactNumber || !selectedProgram || !selectedYearLevel) {
+        if (loading) return;
+        if (!email.trim() || !username.trim() || !password || !fullname.trim() || !contactNumber.trim() || !selectedProgram || !selectedYearLevel) {
             alert('All fields are required');
             console.error('All fields are required');
             return;
         }
 
-        console.log('Request Data:', {
-          email,
-          username,
-          password,
-          fullname,
-          contactNumber,
-          program: selectedProgram,
-          yearLevel: selectedYearLevel,
-        });
-
+        setLoading(true);
         const response = await axios.post(`${backendUrl}/create-user`, {
-            email,
-            username,
+            email: email.trim(),
+            username: username.trim(),
             password,
-            fullname,
-            contactNumber,
+            fullname: fullname.trim(),
+            contactNumber: contactNumber.trim(),
             program: selectedProgram,
             yearLevel: selectedYearLevel,
         });
 
-        console.log('Full response:', response.data);
+        if (!response.data?.success) {
+          Alert.alert('Could not create account', response.data?.message || 'Please review your details and try again.');
+          return;
+        }
 
         // Handle navigation or any other logic after successful account creation
         navigation.navigate('Account Sign-In');
       } catch (error) {
-        alert('Error creating account: ' + error);
+        Alert.alert('Could not create account', error.response?.data?.message || 'Please try again.');
         console.error('Error creating account:', error);
+      } finally {
+        setLoading(false);
     }
 };
 
@@ -75,6 +73,9 @@ const CreateAcc = ({ navigation }) => {
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Email"
+            autoCapitalize="none"
+            keyboardType="email-address"
             onChangeText={(text) => setEmail(text)}
           />
         </View>
@@ -82,6 +83,8 @@ const CreateAcc = ({ navigation }) => {
           <Text style={styles.label}>Username</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Username"
+            textContentType="username"
             onChangeText={(text) => setUsername(text)}
           />
         </View>
@@ -89,6 +92,8 @@ const CreateAcc = ({ navigation }) => {
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Password"
+            textContentType="newPassword"
             onChangeText={(text) => setPassword(text)}
             secureTextEntry
           />
@@ -97,6 +102,7 @@ const CreateAcc = ({ navigation }) => {
           <Text style={styles.label}>Full Name</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Full name"
             onChangeText={(text) => setFullName(text)}
           />
         </View>
@@ -104,6 +110,8 @@ const CreateAcc = ({ navigation }) => {
           <Text style={styles.label}>Contact Number</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Contact number"
+            keyboardType="phone-pad"
             onChangeText={(text) => setContactNumber(text)}
           />
         </View>
@@ -136,8 +144,9 @@ const CreateAcc = ({ navigation }) => {
         <TouchableOpacity
           style={styles.createButton}
           onPress={handleCreateAccount}
+          disabled={loading}
         >
-          <Text style={styles.createButtonText}>Sign Up</Text>
+          <Text style={styles.createButtonText}>{loading ? 'Creating account…' : 'Sign Up'}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -175,6 +184,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
+    minHeight: 44,
     padding: 10,
     borderColor: '#EFD02C',
     borderWidth: 1,
@@ -185,6 +195,7 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#EFD02C',
     paddingVertical: 10,
+    minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 30,

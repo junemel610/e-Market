@@ -13,6 +13,7 @@ const Settings = ({ navigation }) => {
   const [userComment, setUserComment] = useState('');
   const [selectedRating, setSelectedRating] = useState(1);
   const [isFeedbackMessageModalVisible, setIsFeedbackMessageModalVisible] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
 
   const toggleDarkMode = () => {
     setDarkModeEnabled((prevDarkMode) => !prevDarkMode);
@@ -27,9 +28,7 @@ const Settings = ({ navigation }) => {
   };
 
   const submitComment = () => {
-    console.log('User Comment:', userComment);
-    setUserComment('');
-    setShowCommentBox(false);
+    setFeedbackMessage('Feedback is not sent because this demo has no feedback service. Your draft is still here.');
     setIsFeedbackMessageModalVisible(true);
   };
 
@@ -72,7 +71,7 @@ const Settings = ({ navigation }) => {
         <Text style={styles.appVersionValue}>v1.0.0</Text>
       </View>
       <View style={styles.settingRow}>
-        <Text style={styles.settingText}>Dark Mode</Text>
+        <Text style={styles.settingText}>Dark Mode (this screen only)</Text>
         <Switch value={darkModeEnabled} onValueChange={toggleDarkMode} />
       </View>
       <TouchableOpacity style={styles.policiesButton} onPress={togglePolicies}>
@@ -134,7 +133,7 @@ const Settings = ({ navigation }) => {
       >
         <View style={styles.feedbackModal}>
           <Text style={styles.feedbackModalText}>
-            Thanks! Your feedback has been recorded!
+            {feedbackMessage}
           </Text>
           <TouchableOpacity
             style={styles.closeFeedbackModalButton}

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 
 const AddList = ({ navigation }) => {
   const [itemName, setItemName] = useState('');
@@ -9,44 +8,36 @@ const AddList = ({ navigation }) => {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
   const [image, setImage] = useState(null);
-
-  useEffect(() => {
-    if (image) {
-      console.log('Image URI:', image);
-    }
-  }, [image]);
-
-  useEffect(() => {
-    (async () => {
-      if (Constants.platform?.ios || Constants.platform?.android) {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need media library permissions to make this work!');
-        }
-      }
-    })();
-  }, []);
+  const [isPickingImage, setIsPickingImage] = useState(false);
 
   const pickImage = async () => {
+    if (isPickingImage) return;
+    setIsPickingImage(true);
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Photo access needed', 'Allow photo access to choose an item image.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         aspect: [16, 9],
         quality: 1,
       });
   
-      console.log('ImagePicker Result:', result);
-  
-      if (!result.cancelled) {
-        const uri = result.uri;
-        console.log('Image URI:', uri);
-        setImage(uri);
+      if (!result.canceled && !result.cancelled) {
+        const uri = result.assets?.[0]?.uri || result.uri;
+        if (uri) setImage(uri);
       } else {
-        console.log('Image picking cancelled');
+        // Cancelling the picker leaves the current draft unchanged.
       }
     } catch (error) {
       console.error('Error picking image', error);
+      Alert.alert('Image not selected', 'Could not open the photo library. Try again.');
+    } finally {
+      setIsPickingImage(false);
     }
   };
   
@@ -68,7 +59,7 @@ const AddList = ({ navigation }) => {
       });
 
       // Perform your API call or data storage here
-      alert('Successfully added the item ' + itemName);
+      alert('Your item details are ready. Publishing listings is not connected yet.');
 
     } catch (error) {
       alert('Failed on Adding Item: ' + error);
@@ -98,14 +89,16 @@ const AddList = ({ navigation }) => {
         <TouchableOpacity
           style={styles.createButton}
           onPress={pickImage}
+          disabled={isPickingImage}
         >
-          <Text style={styles.createButtonText}>Choose Image</Text>
+          <Text style={styles.createButtonText}>{isPickingImage ? 'Opening photos…' : 'Choose Image'}</Text>
         </TouchableOpacity>
         <Text style={styles.text1}>Enter your item details below:</Text>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Item Name</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Item name"
             onChangeText={(text) => setItemName(text)}
           />
         </View>
@@ -113,6 +106,7 @@ const AddList = ({ navigation }) => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Item description"
             onChangeText={(text) => setDescription(text)}
           />
         </View>
@@ -120,6 +114,8 @@ const AddList = ({ navigation }) => {
           <Text style={styles.label}>Price</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Price"
+            keyboardType="decimal-pad"
             onChangeText={(text) => setPrice(text)}
           />
         </View>
@@ -127,6 +123,8 @@ const AddList = ({ navigation }) => {
           <Text style={styles.label}>Item Quantity</Text>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Item quantity"
+            keyboardType="number-pad"
             onChangeText={(text) => setQuantity(text)}
           />
         </View>
@@ -173,6 +171,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
+    minHeight: 44,
     padding: 10,
     borderColor: '#EFD02C',
     borderWidth: 1,
@@ -183,6 +182,7 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: '#EFD02C',
     paddingVertical: 10,
+    minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 30,
