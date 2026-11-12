@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
-const BLACK = '#000000';
+const WHITE = '#FFFFFF';
 const AMBER = '#F59E0B';
 const GRAY = '#BEBEBE';
-const WHITE = '#FFFFFF';
-const CARD = '#111111';
+const BLACK = '#111111';
+const CARD = '#F3F4F6';
 
 export default function CodeVerification({ navigation, route }) {
   const { email } = route.params;
@@ -89,44 +89,40 @@ export default function CodeVerification({ navigation, route }) {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: BLACK,
+    backgroundColor: WHITE,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   accentTop: {
     position: 'absolute',
-    top: -40,
-    left: -40,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
     backgroundColor: AMBER,
-    opacity: 0.15,
   },
   accentBottom: {
     position: 'absolute',
-    bottom: -60,
-    right: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 20,
     backgroundColor: GRAY,
-    opacity: 0.1,
   },
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: CARD,
+    backgroundColor: WHITE,
     borderRadius: 20,
     padding: 32,
     borderWidth: 1,
     borderColor: GRAY,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   mark: {
     width: 56,
@@ -137,35 +133,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
   },
   markText: {
     fontSize: 24,
     fontWeight: '800',
-    color: BLACK,
+    color: WHITE,
   },
   heading: {
     fontSize: 26,
     fontWeight: '800',
-    color: WHITE,
+    color: BLACK,
     textAlign: 'center',
     marginBottom: 8,
     lineHeight: 32,
   },
   subheading: {
     fontSize: 15,
-    color: GRAY,
+    color: '#666666',
     textAlign: 'center',
     marginBottom: 28,
     lineHeight: 22,
   },
   errorText: {
     fontSize: 13,
-    color: '#FCA5A5',
+    color: '#DC2626',
     marginBottom: 14,
     textAlign: 'center',
   },
@@ -182,8 +173,8 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 20,
-    color: WHITE,
-    backgroundColor: BLACK,
+    color: BLACK,
+    backgroundColor: CARD,
     borderWidth: 1,
     borderColor: GRAY,
     borderRadius: 10,
@@ -199,20 +190,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
   },
   buttonDisabled: {
     opacity: 0.6,
-    backgroundColor: '#B45309',
+    backgroundColor: '#D97706',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '800',
-    color: BLACK,
+    color: WHITE,
   },
   link: {
     alignSelf: 'center',
