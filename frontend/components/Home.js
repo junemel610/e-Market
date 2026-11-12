@@ -5,9 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/AntDesign';
-import Search from '../components/Search';
-import UserProfile from '../components/UserProfile';
-import MyBag from '../components/MyBag';
+import Search from './Search';
+import UserProfile from './UserProfile';
+import MyBag from './MyBag';
 import Settings from './Settings';
 import AddList from './AddList';
 
