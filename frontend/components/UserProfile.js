@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View, Image, FlatList } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View, Image, FlatList, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from 'react-native-vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 const defaultProfileImage = require('../assets/profilePic.jpg');
 
@@ -10,49 +12,38 @@ const UserProfile = () => {
   const [editing, setEditing] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [error, setError] = useState('');
 
-  const [user, setUser] = useState({
-    username: 'juan23',
-    fullname: 'Juan Dela Cruz',
-    contactNumber: '+639123456789',
-    email: 'juan@tip.edu.ph',
-    program: 'Computer Science',
-    yearLevel: '3rd Year',
-    profileImage: defaultProfileImage,
-  });
+  const [user, setUser] = useState({ username: '', fullname: '', contactNumber: '', email: '', program: '', yearLevel: '', profileImage: defaultProfileImage });
+  const [draft, setDraft] = useState(user);
 
-  const [savedItems, setSavedItems] = useState({
+  const savedItems = {
     Electronics: [],
     Clothing: [],
     School: [
       { id: 1, name: 'T - Square' },
     ],
     Uniform: [],
-  });
+  };
 
   const handleSaveProfile = async () => {
     if (savingProfile) return;
     try {
       setSavingProfile(true);
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const token = await AsyncStorage.getItem('token');
+      await apiRequest('/update-user', { method: 'PATCH', token, body: {
+        fullname: draft.fullname.trim(), contactNumber: draft.contactNumber.trim(),
+        program: draft.program, yearLevel: draft.yearLevel,
+      } });
+      setUser(draft);
       setEditing(false);
+      setError('');
     } catch (error) {
-      console.error('Error updating profile:', error);
+      setError(error.message || 'Could not save your profile. Try again.');
     } finally {
       setSavingProfile(false);
     }
   };
-
-  const programs = [
-    'Computer Science',
-    'Computer Engineering',
-    'Civil Engineering',
-    'Architecture',
-    'Mechanical Engineering',
-    'Business Management',
-  ];
-
-  const yearLevels = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
 
   const savedItemsData = Object.entries(savedItems).map(([category, items]) => ({
     category,
@@ -73,7 +64,17 @@ const UserProfile = () => {
   );
 
   useEffect(() => {
-    setLoadingProfile(false);
+    let active = true;
+    (async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) throw new Error('Sign in again to load your profile.');
+        const result = await apiRequest('/user-data', { token });
+        if (active) { setUser({ ...result.user, profileImage: defaultProfileImage }); setDraft({ ...result.user, profileImage: defaultProfileImage }); }
+      } catch (loadError) { if (active) setError(loadError.message || 'Could not load your profile.'); }
+      finally { if (active) setLoadingProfile(false); }
+    })();
+    return () => { active = false; };
   }, []);
 
   if (loadingProfile) {
@@ -100,7 +101,7 @@ const UserProfile = () => {
             <Text style={styles.username}>{user.username}</Text>
           </View>
           <Pressable
-            onPress={() => setEditing(true)}
+            onPress={() => { setDraft(user); setEditing(true); setError(''); }}
             style={styles.editButton}
             activeOpacity={0.85}
           >
@@ -114,7 +115,14 @@ const UserProfile = () => {
           <Text style={styles.infoText}>Your profile details and saved items.</Text>
         </View>
 
-        <Pressable
+        {editing && <View style={styles.editFields}>
+          {[['fullname', 'Full name'], ['contactNumber', 'Contact number'], ['program', 'Program'], ['yearLevel', 'Year level']].map(([field, label]) => <View key={field}>
+            <Text style={styles.editLabel}>{label}</Text>
+            <TextInput style={styles.editInput} value={draft[field] || ''} accessibilityLabel={label} onChangeText={(value) => setDraft((current) => ({ ...current, [field]: value }))} />
+          </View>)}
+        </View>}
+        {!!error && <Text style={styles.errorText}>{error}</Text>}
+        {editing && <Pressable
           disabled={savingProfile}
           onPress={handleSaveProfile}
           accessibilityRole="button"
@@ -124,7 +132,7 @@ const UserProfile = () => {
             ? <ActivityIndicator size="small" color={theme.colors.onPrimary} />
             : <MaterialCommunityIcons name="content-save" size={18} color={theme.colors.onPrimary} />}
           <Text style={styles.saveLabel}>{savingProfile ? 'Saving…' : 'Save changes'}</Text>
-        </Pressable>
+        </Pressable>}
 
         <View style={styles.divider} />
         <Text style={styles.subheading}>Your saved items</Text>
@@ -158,6 +166,10 @@ const styles = StyleSheet.create({
   infoText: { flex: 1, color: theme.colors.primary, fontSize: theme.fontSize.sm, lineHeight: 21 },
   saveButton: { minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: theme.spacing.sm, paddingHorizontal: theme.spacing.lg, borderRadius: 12, backgroundColor: theme.colors.primary },
   saveLabel: { color: theme.colors.onPrimary, fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.semibold },
+  editFields: { gap: theme.spacing.sm },
+  editLabel: { color: theme.colors.text, fontSize: theme.fontSize.sm, fontWeight: theme.fontWeight.semibold, marginBottom: theme.spacing.xs },
+  editInput: { minHeight: 48, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 10, paddingHorizontal: theme.spacing.md, backgroundColor: theme.colors.surface, color: theme.colors.text },
+  errorText: { color: theme.colors.danger, textAlign: 'center' },
   disabled: { opacity: 0.6 },
   pressed: { opacity: 0.75 },
   divider: { width: '100%', height: 1, backgroundColor: theme.colors.border, marginVertical: theme.spacing.md },
