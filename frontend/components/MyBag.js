@@ -1,28 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FlatList, View, Text, StyleSheet, Pressable, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from 'react-native-vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import theme from '../src/theme';
+import { useBag } from '../src/BagContext';
 
-const MyBag = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'T-Square Ruler',
-      price: 150,
-      image: require('../assets/1.jpg'),
-      qty: 1,
-      seller: 'Nebula Admin',
-    },
-    {
-      id: 2,
-      name: 'Architecture Scale',
-      price: 280,
-      image: require('../assets/2.jpg'),
-      qty: 2,
-      seller: 'Nebula Admin',
-    },
-  ]);
+const MyBag = ({ navigation }) => {
+  const { items: cartItems, removeItem, changeQuantity } = useBag();
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
   const shipping = subtotal >= 500 ? 0 : 60;
@@ -37,7 +21,7 @@ const MyBag = () => {
         {
           text: 'Remove',
           onPress: () => {
-            setCartItems(cartItems.filter((item) => item.id !== itemId));
+            removeItem(itemId);
           },
         },
       ],
@@ -47,15 +31,11 @@ const MyBag = () => {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-    Alert.alert('Checkout', 'Proceeding to checkout with ' + cartItems.length + ' item(s).');
+    Alert.alert('Checkout unavailable', 'Checkout is not connected yet. Your bag is saved while you continue developing.');
   };
 
   const handleQtyChange = (itemId, delta) => {
-    setCartItems(cartItems.map((item) => {
-      if (item.id !== itemId) return item;
-      const newQty = Math.max(1, item.qty + delta);
-      return { ...item, qty: newQty };
-    }));
+    changeQuantity(itemId, delta);
   };
 
   const renderItem = ({ item }) => {
@@ -69,18 +49,18 @@ const MyBag = () => {
           <Text style={styles.itemName}>{item.name}</Text>
           <Text style={styles.itemSeller}>{item.seller}</Text>
           <View style={styles.itemRow}>
-            <Pressable style={styles.qtyButton} onPress={() => handleQtyChange(item.id, -1)} activeOpacity={0.85}>
+            <Pressable style={styles.qtyButton} onPress={() => handleQtyChange(item.id, -1)} accessibilityRole="button" accessibilityLabel={`Decrease ${item.name} quantity`} activeOpacity={0.85}>
               <MaterialCommunityIcons name="minus" size={18} color={theme.colors.textLight} />
             </Pressable>
             <Text style={styles.qtyValue}>{item.qty}</Text>
-            <Pressable style={styles.qtyButton} onPress={() => handleQtyChange(item.id, 1)} activeOpacity={0.85}>
+            <Pressable style={styles.qtyButton} onPress={() => handleQtyChange(item.id, 1)} accessibilityRole="button" accessibilityLabel={`Increase ${item.name} quantity`} activeOpacity={0.85}>
               <MaterialCommunityIcons name="plus" size={18} color={theme.colors.primary} />
             </Pressable>
           </View>
         </View>
         <View style={styles.itemActions}>
           <Text style={styles.itemLineTotal}>₱{lineTotal.toFixed(2)}</Text>
-          <Pressable onPress={() => handleRemoveItem(item.id)} activeOpacity={0.85}>
+          <Pressable style={styles.removeButton} onPress={() => handleRemoveItem(item.id)} accessibilityRole="button" accessibilityLabel={`Remove ${item.name}`} activeOpacity={0.85}>
             <MaterialCommunityIcons name="delete-outline" size={20} color={theme.colors.danger} />
           </Pressable>
         </View>
@@ -101,7 +81,7 @@ const MyBag = () => {
             <MaterialCommunityIcons name="basket" size={64} color={theme.colors.textLight} />
             <Text style={styles.emptyTitle}>Your bag is empty</Text>
             <Text style={styles.emptySubtitle}>Add items to start shopping.</Text>
-            <Pressable style={styles.shopButton} activeOpacity={0.85}>
+            <Pressable style={styles.shopButton} onPress={() => navigation.navigate('Search')} activeOpacity={0.85}>
               <Text style={styles.shopButtonText}>Start shopping</Text>
             </Pressable>
           </View>
@@ -157,7 +137,8 @@ const MyBag = () => {
   itemName: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
   itemSeller: { fontSize: theme.fontSize.xs, color: theme.colors.textLight },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm, marginTop: theme.spacing.xs },
-  qtyButton: { width: 30, height: 30, borderRadius: 6, backgroundColor: theme.colors.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  qtyButton: { width: 44, height: 44, borderRadius: 8, backgroundColor: theme.colors.surfaceMuted, alignItems: 'center', justifyContent: 'center' },
+  removeButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-end' },
   qtyValue: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.text, minWidth: 20, textAlign: 'center' },
   itemActions: { gap: theme.spacing.sm },
   itemLineTotal: { fontSize: theme.fontSize.base, fontWeight: theme.fontWeight.bold, color: theme.colors.text, minWidth: 70, textAlign: 'right' },

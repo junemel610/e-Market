@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from 'react-native-vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import theme from '../src/theme';
+import { useBag } from '../src/BagContext';
 
 const BLACK = theme.colors.text;
 
-const Search = ({ navigation }) => {
-  const [query, setQuery] = useState('');
-  const [dataSource, setDataSource] = useState([]);
-  const [dataBackup, setDataBackup] = useState([]);
+const Search = ({ navigation, route }) => {
+  const [query, setQuery] = useState(String(route.params?.query || ''));
+  const { addItem } = useBag();
+  useEffect(() => setQuery(String(route.params?.query || '')), [route.params?.query]);
 
   const data = [
     { id: 1, name: 'T-Square Ruler', author: 'Nebula Admin', img: require('../assets/1.jpg'), description: 'T-Square from TIPC 3rd Year Architecture.', price: '₱150' },
@@ -18,19 +19,20 @@ const Search = ({ navigation }) => {
     { id: 4, name: 'Sketchbook A4', author: 'Nebula Admin', img: require('../assets/5.jpg'), description: 'A4 sketchbook for design students.', price: '₱180' },
   ];
 
-  const filterItem = (text) => {
-    const normalizedQuery = text.trim().toLowerCase();
-    setQuery(text);
-    const filtered = normalizedQuery
-      ? dataBackup.filter((item) => item.name.toLowerCase().includes(normalizedQuery))
-      : dataBackup;
-    setDataSource(filtered);
-  };
+  const dataSource = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return data;
+    const tokens = normalizedQuery.split(/\s+/);
+    return data.filter((item) => tokens.some((token) => `${item.name} ${item.description} ${item.author}`.toLowerCase().includes(token)));
+  }, [query]);
+
+  const filterItem = setQuery;
 
   const handleAddToBag = (item) => {
-    Alert.alert('Add to bag', `Add ${item.name} to My Bag?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Add', onPress: () => navigation.navigate('MyBag') },
+    addItem({ ...item, price: Number(item.price.replace(/[^0-9.]/g, '')), image: item.img });
+    Alert.alert('Added to bag', `${item.name} is in your bag now.`, [
+      { text: 'Keep browsing', style: 'cancel' },
+      { text: 'View bag', onPress: () => navigation.navigate('MyBag') },
     ]);
   };
 

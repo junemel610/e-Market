@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Image, Pressable, Alert, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MaterialCommunityIcons } from 'react-native-vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Search from './Search';
 import UserProfile from './UserProfile';
 import MyBag from './MyBag';
 import Settings from './Settings';
 import AddList from './AddList';
 import theme from '../src/theme';
+import { BagProvider } from '../src/BagContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AMBER = theme.colors.primary;
 const BLACK = theme.colors.text;
@@ -44,7 +45,7 @@ function HomeScreen({ navigation }) {
         {
           text: 'Confirm',
           onPress: async () => {
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await AsyncStorage.removeItem('token');
             Alert.alert('Logged out', 'See you next time.');
             navigation.navigate('Account Sign-In');
           },
@@ -61,7 +62,7 @@ function HomeScreen({ navigation }) {
   const goToSettings = () => navigation.navigate('Settings');
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.searchBar}>
@@ -73,6 +74,7 @@ function HomeScreen({ navigation }) {
               autoCapitalize="none"
               autoCorrect={false}
               spellCheck={false}
+              onSubmitEditing={(event) => navigation.navigate('Search', { query: event.nativeEvent.text })}
             />
           </View>
           <Pressable style={styles.sellButton} onPress={goToAddList} activeOpacity={0.85}>
@@ -101,9 +103,9 @@ function HomeScreen({ navigation }) {
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Marketplace listings</Text>
         </View>
-        <ScrollView contentContainerStyle={styles.listingsContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.listingsContainer}>
           {listings.map((listing, index) => (
-            <Pressable key={index} style={styles.listingCard} onPress={() => {}} activeOpacity={0.85}>
+            <Pressable key={index} style={styles.listingCard} onPress={() => navigation.navigate('Search', { query: listing.title })} activeOpacity={0.85}>
               <Image source={listing.image} style={styles.listingImage} />
               <View style={styles.listingInfo}>
                 <Text style={styles.listingTitle}>{listing.title}</Text>
@@ -114,7 +116,7 @@ function HomeScreen({ navigation }) {
               </View>
             </Pressable>
           ))}
-        </ScrollView>
+        </View>
 
         <Pressable style={styles.logoutButton} onPress={handleLogout} activeOpacity={0.85}>
           <MaterialCommunityIcons name="logout" size={20} color={theme.colors.danger} />
@@ -127,18 +129,18 @@ function HomeScreen({ navigation }) {
           <MaterialCommunityIcons name="magnify" size={24} color={AMBER} />
           <Text style={[styles.navLabel, { color: AMBER }]}>Search</Text>
         </Pressable>
-        <Pressable style={styles.navItem()} onPress={goToUserProfile} activeOpacity={0.85}>
+        <Pressable style={styles.navItem} onPress={goToUserProfile} activeOpacity={0.85}>
           <MaterialCommunityIcons name="account" size={24} color={theme.colors.textLight} />
           <Text style={[styles.navLabel, { color: theme.colors.textLight }]}>Profile</Text>
         </Pressable>
-        <Pressable style={styles.navFab} onPress={goToAddList} activeOpacity={0.85}>
+        <Pressable style={styles.navFab} onPress={goToAddList} accessibilityRole="button" accessibilityLabel="Create a listing" activeOpacity={0.85}>
           <MaterialCommunityIcons name="plus" size={24} color={theme.colors.onPrimary} />
         </Pressable>
-        <Pressable style={styles.navItem()} onPress={goToMyBag} activeOpacity={0.85}>
+        <Pressable style={styles.navItem} onPress={goToMyBag} activeOpacity={0.85}>
           <MaterialCommunityIcons name="cart" size={24} color={theme.colors.textLight} />
           <Text style={[styles.navLabel, { color: theme.colors.textLight }]}>Bag</Text>
         </Pressable>
-        <Pressable style={styles.navItem()} onPress={goToSettings} activeOpacity={0.85}>
+        <Pressable style={styles.navItem} onPress={goToSettings} activeOpacity={0.85}>
           <MaterialCommunityIcons name="settings" size={24} color={theme.colors.textLight} />
           <Text style={[styles.navLabel, { color: theme.colors.textLight }]}>Settings</Text>
         </Pressable>
@@ -148,10 +150,8 @@ function HomeScreen({ navigation }) {
 }
 
 export default function Home() {
-  const navigation = useNavigation();
-
   return (
-    <Stack.Navigator>
+    <BagProvider><Stack.Navigator>
       <Stack.Screen
         name="Home"
         component={HomeScreen}
@@ -214,13 +214,13 @@ export default function Home() {
           headerTintColor: BLACK,
         }}
       />
-    </Stack.Navigator>
+    </Stack.Navigator></BagProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
-  scrollContent: { flexGrow: 1, padding: theme.spacing.lg },
+  scrollContent: { flexGrow: 1, padding: theme.spacing.lg, paddingBottom: 120 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
-    minHeight: 36,
+    minHeight: 44,
   },
   categoryPillActive: {
     backgroundColor: AMBER,
@@ -305,13 +305,13 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
     paddingVertical: theme.spacing.md,
-    paddingBottom: theme.spacing.xl,
+    paddingBottom: theme.spacing.md,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
   },
   navItem: { alignItems: 'center', paddingVertical: theme.spacing.xs },
-  navFab: { alignItems: 'center', paddingVertical: theme.spacing.xs },
+  navFab: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   navLabel: { fontSize: theme.fontSize.xs, fontWeight: theme.fontWeight.bold, marginTop: theme.spacing.xs },
 });

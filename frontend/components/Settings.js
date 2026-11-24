@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from 'react-native-vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Slider } from 'react-native-elements';
 import theme from '../src/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const BLACK = theme.colors.text;
+const AMBER = theme.colors.primary;
 
 const Settings = ({ navigation }) => {
   const [showPolicies, setShowPolicies] = useState(false);
@@ -17,7 +21,11 @@ const Settings = ({ navigation }) => {
   const toggleCommentBox = () => setShowCommentBox((prev) => !prev);
 
   const submitComment = () => {
-    setFeedbackMessage('Feedback received. Thank you for helping TSe-Market improve.');
+    if (!userComment.trim()) {
+      setFeedbackMessage('Write a comment before submitting.');
+    } else {
+      setFeedbackMessage('Feedback submission is not connected yet. Your comment has not been sent.');
+    }
     setIsFeedbackMessageModalVisible(true);
   };
 
@@ -30,7 +38,7 @@ const Settings = ({ navigation }) => {
         {
           text: 'Confirm',
           onPress: async () => {
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await AsyncStorage.removeItem('token');
             Alert.alert('Logged out', 'See you next time.');
             navigation.navigate('Account Sign-In');
           },
@@ -106,13 +114,13 @@ const Settings = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <View style={styles.modalOverlay} />
-      <View style={[styles.feedbackModal, isFeedbackMessageModalVisible && styles.modalVisible]}>
+      {isFeedbackMessageModalVisible && <View style={styles.modalOverlay}>
+      <View style={styles.feedbackModal}>
         <Text style={styles.feedbackModalText}>{feedbackMessage}</Text>
         <Pressable style={[styles.button, styles.buttonFill]} onPress={() => setIsFeedbackMessageModalVisible(false)} activeOpacity={0.85}>
           <Text style={styles.buttonText}>Close</Text>
         </Pressable>
-      </View>
+      </View></View>}
     </SafeAreaView>
   );
 };
