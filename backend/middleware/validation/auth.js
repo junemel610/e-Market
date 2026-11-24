@@ -11,7 +11,7 @@ exports.isAuth = async (req, res, next) => {
         const decode = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decode.userId);
         if(!user) {
-            return res.json({success: false, message: 'Unathorized access.'})
+            return res.status(401).json({success: false, message: 'Your session is no longer valid. Please sign in again.'});
         }
 
         req.user = user;
@@ -21,19 +21,19 @@ exports.isAuth = async (req, res, next) => {
         catch (error) 
         {
             if(error.name === 'JsonWebTokenError'){
-                return res.json({success: false, message: 'Unathorized access.'});
+                return res.status(401).json({success: false, message: 'Your session is no longer valid. Please sign in again.'});
             }
 
             if(error.name === 'TokenExpiredError'){
-                return res.json({success: false, message: 'Session Expired.'});
+                return res.status(401).json({success: false, message: 'Your session has expired. Please sign in again.'});
             }
 
-            res.json({success: false, message: 'Internal Server Error.'});
+            return res.status(500).json({success: false, message: 'Could not verify your session. Please try again.'});
         }
         
     }
     else
     {
-        res.json({success: false, message: 'Unathorized access.'})
+        res.status(401).json({success: false, message: 'Sign in to access your profile.'});
     }
 };

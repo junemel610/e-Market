@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 const tseMarketLogo = require('../assets/TSeMarketLogo.jpg');
 
@@ -20,13 +21,14 @@ export default function CodeVerification({ navigation, route }) {
     try {
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      console.log('Code verified locally for:', email);
+      await apiRequest('/verify-code', {
+        method: 'POST',
+        body: { email, code: Number(enteredCode) },
+      });
       navigation.navigate('Reset Password', { email });
     } catch (error) {
       console.error('Verification Error:', error);
-      setError('An error occurred. Please try again.');
+      setError(error.message || 'Could not verify this code. Try again.');
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,6 @@ export default function CodeVerification({ navigation, route }) {
             accessibilityLabel="Six-digit verification code"
             autoCorrect={false}
             spellCheck={false}
-            value={enteredCode}
             onChangeText={(text) => { setEnteredCode(text.replace(/\D/g, '')); setError(''); }}
           />
         </View>

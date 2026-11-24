@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 const tseMarketLogo = require('../assets/TSeMarketLogo.jpg');
 
@@ -23,9 +24,12 @@ export default function ResetPassword({ navigation, route }) {
     try {
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await apiRequest('/reset-password', {
+        method: 'PATCH',
+        body: { email, password: newPassword, confirmPassword },
+      });
 
-      Alert.alert('Password Reset', 'Your password has been successfully reset locally.', [
+      Alert.alert('Password reset', 'Sign in with your new password.', [
         {
           text: 'OK',
           onPress: () => {
@@ -35,7 +39,7 @@ export default function ResetPassword({ navigation, route }) {
       ]);
     } catch (error) {
       console.error('Error resetting password:', error);
-      Alert.alert('Error', 'Failed to reset password. Please try again.');
+      Alert.alert('Password reset failed', error.message || 'Please try again.');
     } finally {
       setLoading(false);
     }

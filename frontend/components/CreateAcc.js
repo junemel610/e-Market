@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 const tseMarketLogo = require('../assets/TSeMarketLogo.jpg');
 
@@ -37,13 +38,22 @@ const CreateAcc = ({ navigation }) => {
       setError('');
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      Alert.alert('Account created', 'Your account has been created locally.');
+      await apiRequest('/create-user', {
+        method: 'POST',
+        body: {
+          email: email.trim().toLowerCase(),
+          username: username.trim(),
+          password,
+          fullname: fullname.trim(),
+          contactNumber: contactNumber.trim(),
+          program: selectedProgram,
+          yearLevel: selectedYearLevel,
+        },
+      });
+      Alert.alert('Account created', 'You can now sign in with your new account.');
       navigation.navigate('Account Sign-In');
     } catch (error) {
-      Alert.alert('Could not create account', 'Please try again.');
-      console.error('Error creating account:', error);
+      setError(error.message || 'Could not create account. Please try again.');
     } finally {
       setLoading(false);
     }

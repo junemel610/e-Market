@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, BackHandler, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 const tseMarketLogo = require('../assets/TSeMarketLogo.jpg');
 
@@ -20,25 +22,18 @@ export default function SignIn({ navigation }) {
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      Alert.alert('Signed in', 'Welcome back, ' + username.trim() + '.');
+      const result = await apiRequest('/sign-in', {
+        method: 'POST',
+        body: { username: username.trim(), password },
+      });
+      await AsyncStorage.setItem('token', result.token);
       navigation.navigate('Homepage');
     } catch (error) {
-      console.error('Error during sign in:', error);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      setError(error.message || 'Unable to sign in. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      return true;
-    });
-
-    return () => backHandler.remove();
-  }, []);
 
   return (
     <View style={styles.page}>
@@ -94,16 +89,6 @@ export default function SignIn({ navigation }) {
           <Text style={styles.buttonText}>
             {loading ? 'Signing in…' : 'Sign in'}
           </Text>
-        </TouchableOpacity>
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or continue with</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <TouchableOpacity style={styles.socialButton} activeOpacity={0.85}>
-          <Text style={styles.socialText}>Continue with Google</Text>
         </TouchableOpacity>
 
         <View style={styles.footerRow}>

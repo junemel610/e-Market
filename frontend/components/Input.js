@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 export default function Input({ onSignInPress }) {
   const [username, setUsername] = useState('');
@@ -17,10 +19,18 @@ export default function Input({ onSignInPress }) {
     setErrorMessage('');
     setLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    onSignInPress();
-    setLoading(false);
+    try {
+      const result = await apiRequest('/sign-in', {
+        method: 'POST',
+        body: { username: username.trim(), password },
+      });
+      await AsyncStorage.setItem('token', result.token);
+      onSignInPress();
+    } catch (error) {
+      setErrorMessage(error.message || 'Unable to sign in. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

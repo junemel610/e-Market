@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import theme from '../src/theme';
+import { apiRequest } from '../src/api';
 
 const tseMarketLogo = require('../assets/TSeMarketLogo.jpg');
 
@@ -20,13 +21,14 @@ export default function ForgotPassword({ navigation }) {
       setError('');
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      console.log('Verification code sent locally to:', normalizedEmail);
+      await apiRequest('/send-code', {
+        method: 'POST',
+        body: { email: normalizedEmail },
+      });
       navigation.navigate('Code Verification', { email: normalizedEmail });
     } catch (error) {
       console.error('Error sending verification code:', error);
-      setError('Could not send the code. Try again.');
+      setError(error.message || 'Could not send the code. Try again.');
     } finally {
       setLoading(false);
     }
